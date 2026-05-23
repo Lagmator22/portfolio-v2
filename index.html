@@ -1,71 +1,4 @@
 <!doctype html>
-<!--
-  ============================================================
-  GURMAN S. — PORTFOLIO SITE
-  Single-file vanilla HTML + React (in-browser Babel) app.
-  No build step. Drop on any static host (github pages, vercel,
-  netlify, etc) and it just runs.
-  ============================================================
-
-  ARCHITECTURE (skim before editing)
-  ----------------------------------
-  ┌──────────────────────────────────────────────────────────┐
-  │ <head>                                                    │
-  │   • TWEAK_DEFAULTS   — user-tweakable runtime config      │
-  │   • <style>          — design tokens + components         │
-  ├──────────────────────────────────────────────────────────┤
-  │ <body>                                                    │
-  │   • #cursor-canvas   — canvas for cursor particle FX      │
-  │   • <script> data:                                        │
-  │       window.__POSTS         (blog entries)               │
-  │       window.__PROJECTS      (project cards)              │
-  │       window.__MONSTERS      (pixel sprite defs)          │
-  │       window.MonsterRenderer (canvas pixel-art engine)    │
-  │   • <script> cursor FX + scroll progress + reveal IO      │
-  │   • <script type="text/babel"> React app                  │
-  │       Pages: Home / Projects / Project / Blog / Post /    │
-  │              Study / About / Contact                      │
-  │       Panels: TweaksPanel / Cmdk / OwnerLogin / Editor    │
-  └──────────────────────────────────────────────────────────┘
-
-  HOW TO ADD A NEW PIECE OF CONTENT
-  ---------------------------------
-  • New blog post     → push to window.__POSTS array, OR
-                        sign in as owner and use the editor UI.
-  • New project       → push to window.__PROJECTS array.
-  • New monster       → push to window.__MONSTERS (16×16 grid).
-  • New study item    → see STUDY_DEFAULTS + STUDY_KINDS block
-                        (search for "STUDY LAB").
-  • New cursor flare  → see "CURSOR LAB" component + the
-                        [data-cursor=…] CSS rules. Add a shape
-                        rule to CSS, an emit() branch to the
-                        canvas script, and an entry to CURSORS.
-  • New page / route  → add a `route.a === '<name>'` branch in
-                        the App() router at the bottom of the
-                        babel script, plus a link in Nav().
-
-  TWEAKS PROTOCOL
-  ---------------
-  The TWEAK_DEFAULTS object (top of <head>) is wrapped in
-  /*EDITMODE-BEGIN*/…/*EDITMODE-END*/ so the host editor can
-  persist user changes to disk. Don't reformat the JSON inside.
-
-  OWNER MODE
-  ----------
-  Owner sign-in is gated by a SHA-256 password hash baked into
-  TWEAK_DEFAULTS.ownerHash. Change the hash to take ownership
-  (recipe is in OWNER_GUIDE.md). Owner mode unlocks: editor for
-  posts + projects, edit/add/delete on study resources.
-
-  CURSOR FX
-  ---------
-  Two layered effects:
-    1. DOM   — .cursor-dot + .cursor-ring elements styled per
-               [data-cursor=…] attribute on <html>. Shapes!
-    2. CANVAS — #cursor-canvas runs a particle system whose
-                emit() switch picks per-style behavior.
-  Both react to TWEAK changes via a MutationObserver.
--->
 <html lang="en" data-mode="dark" data-accent="indigo" data-monsters="on" data-cursor="comet" data-density="comfortable">
 <head>
 <meta charset="utf-8" />
@@ -82,7 +15,7 @@
 <link rel="stylesheet" href="publish/console.css">
 
 <script>
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+const TWEAK_DEFAULTS = {
   "accent": "indigo",
   "mode": "dark",
   "monsters": true,
@@ -91,13 +24,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "density": "roomy",
   "cursor": "crosshair",
   "scrollFx": true,
-  "ownerHash": "761820b8ecc759600ff651429783c217ec5bf7fbb1bcc8784d33bf70e9deb4c2"
-}/*EDITMODE-END*/;
+  "ownerHash": "0c1a27670aecc48ee49e582446a65d19a9122a849b4ce26f3160c8dc29f17724"
+};
 window.TWEAK_DEFAULTS = TWEAK_DEFAULTS;
-/* ownerHash above is the SHA-256 of your owner password. Default unlocks with the
-   placeholder shipped in OWNER_GUIDE.md — CHANGE IT before you publish.
-   Recipe (terminal):  echo -n "your-new-password" | shasum -a 256
-   Paste the 64-char hex above. Never commit the plaintext. */
 </script>
 
 <style>
@@ -3170,11 +3099,7 @@ function OwnerLogin({ onClose, onUnlock, expectedHash }) {
   return (
     <div className="modal-bg" onClick={(e) => {if (e.target === e.currentTarget) onClose();}}>
       <div className="modal">
-        <div className="kicker">owner access</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', margin: '8px 0 12px' }}>Unlock editing.</h2>
-        <p style={{ color: 'var(--ink-2)', lineHeight: 1.5, margin: '0 0 16px', fontSize: 14 }}>
-          Password is matched against a sha-256 hash baked into the file. The page never sees plaintext, and no plaintext lives in the source. Setup recipe is in <code>OWNER_GUIDE.md</code> (linked in footer); change <code>TWEAK_DEFAULTS.ownerHash</code> by computing the hash of your own password.
-        </p>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', margin: '8px 0 12px' }}>Sign in.</h2>
         <input type="password" autoFocus value={pw} onChange={(e) => {setPw(e.target.value);setErr(false);}}
         onKeyDown={(e) => e.key === 'Enter' && try_()}
         placeholder="password"
@@ -3184,10 +3109,6 @@ function OwnerLogin({ onClose, onUnlock, expectedHash }) {
           <button className="btn" onClick={onClose}>cancel</button>
           <button className="btn btn--primary" onClick={try_}>unlock</button>
         </div>
-        <details style={{ marginTop: 14, fontSize: 11, color: 'var(--ink-4)' }}>
-          <summary style={{ cursor: 'pointer' }}>how to change password</summary>
-          <p style={{ lineHeight: 1.6, marginTop: 8 }}>In a terminal: <code>echo -n "yourpassword" | shasum -a 256</code>. Paste the resulting 64-char hex into <code>TWEAK_DEFAULTS.ownerHash</code> at the top of the html file. Commit. Done.</p>
-        </details>
       </div>
     </div>);
 

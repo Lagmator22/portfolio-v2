@@ -1,0 +1,6 @@
+# Local-only working notes — agent context, owner setup, secrets recipes.
+# Anything in here NEVER ships to GitHub.
+private-notes/
+
+# macOS noise
+.DS_Store
