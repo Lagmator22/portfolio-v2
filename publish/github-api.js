@@ -106,6 +106,10 @@
       setAuth(next) { auth = next; },
       clearAuth() { auth = null; },
 
+      // Escape hatch for endpoints not covered by the typed helpers
+      // (release create/get, asset upload metadata, etc.).
+      _raw(path, opts = {}) { return req(path, opts); },
+
       /* ------------ user + repo introspection ------------ */
       async whoami() {
         return req('/user');

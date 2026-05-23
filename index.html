@@ -201,6 +201,11 @@ window.TWEAK_DEFAULTS = TWEAK_DEFAULTS;
   --ink-3:oklch(0.52 0.010 280);
   --ink-4:oklch(0.68 0.008 280);
   --accent-ink:oklch(1 0 0);
+  /* Darker accent in light mode so cursor particles + monster ink have real contrast. */
+  --accent:oklch(0.48 0.18 var(--accent-h));
+  --accent-hi:oklch(0.58 0.15 var(--accent-h));
+  --accent-lo:oklch(0.36 0.20 var(--accent-h));
+  --accent-glow:oklch(0.48 0.18 var(--accent-h) / 0.40);
   color-scheme:light;
 }
 /* === VS-Code-style theme palettes — each forces its own bg/ink AND signature accent ===
@@ -1066,17 +1071,9 @@ html[data-cursor]:not([data-cursor="off"]) *{cursor:none!important}
   box-shadow:0 0 12px var(--accent-glow);
   transition:transform 80ms linear;
 }
-/* Drifting accent halo — y-pos driven from JS via --y, fades on reduced-motion. */
-.scroll-aura{
-  position:fixed;left:50%;top:0;transform:translate(-50%,-50%);
-  width:min(900px,90vw);height:min(900px,90vw);pointer-events:none;z-index:0;
-  background:radial-gradient(circle,color-mix(in oklch,var(--accent) 12%,transparent),transparent 65%);
-  filter:blur(40px);opacity:.55;
-  transition:transform 280ms var(--ease-out);
-  transform:translate(-50%,calc(-50% + var(--y,40vh)));
-  will-change:transform;
-}
-@media (prefers-reduced-motion:reduce){.scroll-aura{display:none}}
+/* Scroll-following accent halo: removed by request — kept the class so JS still has a
+   target to set --y on, but display:none stops it rendering. */
+.scroll-aura{display:none!important}
 
 /* ================================================================
    SCROLL HINT (hero) — gentle nudge to scroll
@@ -1520,6 +1517,22 @@ function _motion(){return parseFloat(getComputedStyle(document.documentElement).
 function _phase(m,now,hover){const mo=Math.max(.35,_motion());const sp=(m.speed||180)/(hover?1.35:1)/mo;return [0,1,2,1][Math.floor(now/sp)%4]}
 function _off(m,x,y,phase){let dx=0,dy=0;for(const z of m.zones||[]){if(z.rows&&!z.rows.includes(y))continue;if(z.xMin!=null&&x<z.xMin)continue;if(z.xMax!=null&&x>z.xMax)continue;dx+=z.dx?.[phase]||0;dy+=z.dy?.[phase]||0}return [dx,dy]}
 function _cell(m,x,y){const r=m.pixels[y];return r&&r[x]&&r[x]!=="."?r[x]:null}
+// Resolve --accent (which is oklch(... var(--accent-h))) to a canvas-safe rgb() string.
+// getComputedStyle on the root returns the unresolved var() chain, which canvas rejects.
+let _accCache="",_accT=0;
+function _resolveAccent(){
+  const now=performance.now();
+  if(_accCache&&now-_accT<500)return _accCache;
+  try{
+    const el=document.createElement("i");
+    el.style.cssText="display:none;color:var(--accent)";
+    document.body.appendChild(el);
+    _accCache=getComputedStyle(el).color||"#9b6cff";
+    el.remove();
+  }catch(e){_accCache="#9b6cff"}
+  _accT=now;
+  return _accCache;
+}
 function _draw(ctx,m,now,hover,px){
   const mot=_motion();const grid=m.pixels[0].length;const phase=_phase(m,now,hover);const dim=grid*px;ctx.clearRect(0,0,dim,dim);
   if(document.documentElement.getAttribute("data-monsters")==="off")return;
@@ -1541,10 +1554,12 @@ function _draw(ctx,m,now,hover,px){
 
   // ambient accent halo (richer than rect)
   if(m.glow){
-    const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#fff";
-    const g=ctx.createRadialGradient(cx,cx,grid*px*.15,cx,cx,grid*px*.55);
-    g.addColorStop(0,acc);g.addColorStop(1,"transparent");
-    ctx.save();ctx.globalAlpha=m.glow*.55;ctx.globalCompositeOperation="lighter";ctx.fillStyle=g;ctx.fillRect(0,0,grid*px,grid*px);ctx.restore();
+    try{
+      const acc=_resolveAccent();
+      const g=ctx.createRadialGradient(cx,cx,grid*px*.15,cx,cx,grid*px*.55);
+      g.addColorStop(0,acc);g.addColorStop(1,"transparent");
+      ctx.save();ctx.globalAlpha=m.glow*.55;ctx.globalCompositeOperation="lighter";ctx.fillStyle=g;ctx.fillRect(0,0,grid*px,grid*px);ctx.restore();
+    }catch(e){}
   }
 
   const blink=mot>0&&((m.idle==="blink"&&now%2800<160)||(hover&&now%2200<120));
@@ -1591,7 +1606,7 @@ function _draw(ctx,m,now,hover,px){
   }
   // Pass 3: eye glints + accent sparkles (dynamic)
   if(!blink){
-    const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#fff";
+    const acc=_resolveAccent();
     for(let y=0;y<grid;y++)for(let x=0;x<grid;x++){
       if(_cell(m,x,y)!=="E")continue;
       const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
@@ -1605,8 +1620,8 @@ function _draw(ctx,m,now,hover,px){
       for(let y=0;y<grid;y++)for(let x=0;x<grid;x++){
         if(_cell(m,x,y)!=="A")continue;
         const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
-        ctx.save();ctx.globalAlpha=pulse*.6;ctx.globalCompositeOperation="lighter";ctx.fillStyle=acc;
-        ctx.fillRect((x+dx)*px-px*.2,(y+dy)*px-px*.2,px*1.4,px*1.4);ctx.restore();
+        try{ctx.save();ctx.globalAlpha=pulse*.6;ctx.globalCompositeOperation="lighter";ctx.fillStyle=acc;
+        ctx.fillRect((x+dx)*px-px*.2,(y+dy)*px-px*.2,px*1.4,px*1.4);ctx.restore();}catch(e){}
       }
     }
   }
@@ -1614,7 +1629,16 @@ function _draw(ctx,m,now,hover,px){
   if(breath!==1&&mot>0){/* breathing already applied via sy */}
   ctx.restore();
 }
-function _tick(now){for(const c of _active){if(!document.contains(c)){_active.delete(c);continue}const m=_MI[c.dataset.monster];if(!m||!c.__ctx)continue;_draw(c.__ctx,m,now,c.__hover,c.__px)}requestAnimationFrame(_tick)}
+function _tick(now){
+  try{
+    for(const c of _active){
+      if(!document.contains(c)){_active.delete(c);c.__mounted=false;continue}
+      const m=_MI[c.dataset.monster];if(!m||!c.__ctx)continue;
+      try{_draw(c.__ctx,m,now,c.__hover,c.__px)}catch(e){console.warn('[MonsterRenderer] draw error:',e)}
+    }
+  }catch(e){}
+  requestAnimationFrame(_tick);
+}
 requestAnimationFrame(_tick);
 function _mount(canvas){
   if(canvas.__mounted)return;
@@ -1628,6 +1652,7 @@ function _mount(canvas){
   _active.add(canvas);
 }
 window.MonsterRenderer={mount:_mount,mountAll:(root=document)=>root.querySelectorAll("canvas[data-monster]").forEach(_mount),MONSTERS:window.__MONSTERS,INDEX:_MI};
+window.__resolveAccent=_resolveAccent;
 </script>
 
 <!-- =============================================================
@@ -1649,7 +1674,8 @@ window.MonsterRenderer={mount:_mount,mountAll:(root=document)=>root.querySelecto
   const particles=[];let lastX=0,lastY=0,heading=0;
   function emit(x,y,style){
     if(style==='off')return;
-    const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#9b6cff';
+    let accent='#9b6cff';
+    try{accent=window.__resolveAccent?.()||accent;}catch(e){}
     const dx=x-lastX,dy=y-lastY,sp=Math.hypot(dx,dy);lastX=x;lastY=y;
     if(sp>0.2)heading=Math.atan2(dy,dx);
     if(style==='comet'){
@@ -1691,7 +1717,9 @@ window.MonsterRenderer={mount:_mount,mountAll:(root=document)=>root.querySelecto
     dot.style.transform=`translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)${dotRot}`;
     ring.style.transform=`translate3d(${rx}px,${ry}px,0) translate(-50%,-50%)${ringRot}`;
     cx.clearRect(0,0,cv.width,cv.height);
-    cx.globalCompositeOperation='lighter';
+    // 'lighter' looks great on dark BG, but turns the cursor invisible in light mode.
+    // Use source-over for light, lighter for everything else.
+    cx.globalCompositeOperation = document.documentElement.getAttribute('data-mode')==='light' ? 'source-over' : 'lighter';
     for(let i=particles.length-1;i>=0;i--){
       const p=particles[i];p.x+=p.vx;p.y+=p.vy;
       if(p.style==='spark'){p.vy+=.12;p.vx*=.985}
@@ -1755,7 +1783,8 @@ window.MonsterRenderer={mount:_mount,mountAll:(root=document)=>root.querySelecto
   document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest(INT);ring.setAttribute('data-hover',el?'on':'off')});
   window.addEventListener('click',e=>{
     const style=curStyle();if(style==='off')return;
-    const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    let accent='#9b6cff';
+    try{accent=window.__resolveAccent?.()||accent;}catch(e){}
     if(style!=='terminal'&&style!=='crosshair'){
       const r=document.createElement('div');r.className='cursor-ripple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';
       if(style==='pixel'){r.style.borderRadius='0';r.style.width='12px';r.style.height='12px'}
@@ -2348,9 +2377,24 @@ function StudyLab({ owner }) {
   const del = (it) => { if (confirm('Remove from study lab?')) setItems(prev => prev.filter(x => x.id !== it.id)); };
   const onFile = async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    const url = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); });
+    let url, note = 'uploaded · ' + Math.round(f.size/1024) + 'kb';
+    // Prefer a configured storage adapter so the URL survives a reload.
+    // Fall back to an inline data URL for unconfigured ('none') accounts.
+    try {
+      const adapter = window.StorageAdapter?.current();
+      if (adapter && adapter.kind && adapter.kind !== 'none') {
+        const r = await adapter.upload(f, { hint: 'study-lab' });
+        if (r?.url) { url = r.url; note += ' · ' + adapter.kind; }
+      }
+    } catch (err) {
+      console.warn('[study-lab] storage adapter upload failed, falling back to data URL:', err);
+    }
+    if (!url) {
+      url = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); });
+      note += ' · local (data URL — won\'t survive a reload)';
+    }
     const kind = f.type.startsWith('video/') ? 'video' : 'link';
-    save({ id: 's-' + Date.now(), kind, title: f.name, course: editing?.course || '', tags: [], url, note: 'uploaded · ' + Math.round(f.size/1024) + 'kb', added: new Date().toISOString().slice(0,10) });
+    save({ id: 's-' + Date.now(), kind, title: f.name, course: editing?.course || '', tags: [], url, note, added: new Date().toISOString().slice(0,10) });
     e.target.value = '';
   };
   return (

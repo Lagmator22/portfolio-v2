@@ -278,9 +278,11 @@
   /* ---- register runners for the offline queue ---- */
   function registerRunners() {
     if (!window.PublishQueue) return;
-    window.PublishQueue.registerRunner('posts',    p => Publisher.publishPost(p, { mode: p._mode }));
-    window.PublishQueue.registerRunner('projects', p => Publisher.publishProject(p, { mode: p._mode }));
-    window.PublishQueue.registerRunner('study',    p => Publisher.publishStudy(p, { mode: p._mode }));
+    // noQueue: queue-runners are already draining the queue. Letting a runner
+    // call enqueue on failure here creates an infinite duplication loop.
+    window.PublishQueue.registerRunner('posts',    p => Publisher.publishPost(p, { mode: p._mode, noQueue: true }));
+    window.PublishQueue.registerRunner('projects', p => Publisher.publishProject(p, { mode: p._mode, noQueue: true }));
+    window.PublishQueue.registerRunner('study',    p => Publisher.publishStudy(p, { mode: p._mode, noQueue: true }));
   }
 
   /* ---- wrap each public op so failures auto-queue ---- */
