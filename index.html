@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0c0a18" />
 <meta name="referrer" content="no-referrer-when-downgrade" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src 'self' https://hn.algolia.com https://api.github.com https://formsubmit.co; frame-ancestors 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src 'self' https://hn.algolia.com https://api.github.com https://formsubmit.co https://cloudflare-dns.com; frame-ancestors 'self'">
 <title>Gurman S. — AI & C++ Systems</title>
 <meta name="description" content="Portfolio and dispatch of Gurman S. — AI inference, edge computing, local AI, and pixel monsters." />
 
@@ -2814,9 +2814,42 @@ function About() {
 const INBOX_PARTS = ['gsingh16', '_be24', '@', 'thapar', '.edu'];
 const CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX_PARTS.join('');
 
+// Strict-ish email regex: local@host.tld with no leading/trailing dots, no
+// consecutive dots, at least one TLD dot. Catches the common typos that
+// HTML5's loose default allows (e.g. "a@b").
+const EMAIL_RX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
+
+// Ask Cloudflare's DNS-over-HTTPS whether the domain has MX (mail) records.
+// Returns true if MX exists, false if the domain definitely has no mail server,
+// null if the DNS query itself failed (caller decides whether to allow through).
+async function _domainHasMx(domain) {
+  try {
+    const r = await fetch('https://cloudflare-dns.com/dns-query?name=' + encodeURIComponent(domain) + '&type=MX', {
+      headers: { 'Accept': 'application/dns-json' },
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    // Status 0 = NOERROR; Answer present + non-empty means MX records exist.
+    // Also accept A-record fallback: many domains accept mail at their A host.
+    if (j.Status === 0 && Array.isArray(j.Answer) && j.Answer.some(a => a.type === 15)) return true;
+    return false;
+  } catch (e) { return null; }
+}
+
+async function validateEmail(email) {
+  if (!email) return { ok: false, reason: 'Please enter an email address.' };
+  if (!EMAIL_RX.test(email)) return { ok: false, reason: 'That doesn\'t look like a valid email address.' };
+  const domain = email.split('@')[1].toLowerCase();
+  const mx = await _domainHasMx(domain);
+  if (mx === false) return { ok: false, reason: 'No mail server found for "' + domain + '". Check the spelling.' };
+  // mx === null means DNS check itself failed — let it through; FormSubmit will catch the rest.
+  return { ok: true };
+}
+
 function Contact() {
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
   const [errorMsg, setErrorMsg] = useState('');
+  const [emailErr, setEmailErr] = useState('');
   const [draft, setDraft] = useState({ name: '', email: '', topic: 'work', msg: '' });
   const [honeypot, setHoneypot] = useState('');
   const MAILTO_HREF = 'mailto:' + INBOX_PARTS.join('') + '?subject=' + encodeURIComponent('portfolio contact');
@@ -2826,7 +2859,11 @@ function Contact() {
     if (status === 'sending') return;
     // Honeypot: real humans never fill this. If filled, pretend success silently.
     if (honeypot) { setStatus('sent'); setDraft({ name: '', email: '', topic: 'work', msg: '' }); setTimeout(() => setStatus('idle'), 6000); return; }
+    // Validate the sender's email before spending a FormSubmit call on it.
     setStatus('sending');
+    setEmailErr('');
+    const ev = await validateEmail(draft.email);
+    if (!ev.ok) { setEmailErr(ev.reason); setStatus('idle'); return; }
     try {
       const res = await fetch(CONTACT_ENDPOINT, {
         method: 'POST',
@@ -2874,7 +2911,16 @@ function Contact() {
           <form className="contact-form reveal" onSubmit={submit}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <div className="field"><label>your name</label><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} placeholder="alex h." required /></div>
-              <div className="field"><label>your email</label><input type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} placeholder="you@somewhere.dev" required /></div>
+              <div className="field">
+                <label>your email</label>
+                <input type="email" value={draft.email}
+                  onChange={(e) => { setDraft({ ...draft, email: e.target.value }); if (emailErr) setEmailErr(''); }}
+                  onBlur={async () => { if (!draft.email) return; const ev = await validateEmail(draft.email); setEmailErr(ev.ok ? '' : ev.reason); }}
+                  aria-invalid={!!emailErr}
+                  style={emailErr ? { borderColor: 'oklch(0.72 0.18 25)' } : undefined}
+                  placeholder="you@somewhere.dev" required />
+                {emailErr && <div role="alert" style={{ color: 'oklch(0.72 0.18 25)', fontSize: 12, marginTop: 6, lineHeight: 1.4 }}>⚑ {emailErr}</div>}
+              </div>
             </div>
             <div className="field">
               <label>topic</label>
