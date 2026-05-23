@@ -1,0 +1,157 @@
+/* ============================================================
+   publish/console.css
+   ------------------------------------------------------------
+   Owner Console styles. Lives in its own sheet to keep the
+   single-HTML budget under control and to make it easy to
+   strip if you ever ship a "public-only" build.
+
+   Inherits design tokens from colors_and_type.css /
+   the HTML's <style>: --accent, --ink, --line, --bg-raised, etc.
+   ============================================================ */
+
+/* ---------- page shell ---------- */
+.oc-page{padding-top:80px}
+.oc-hero{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:end;margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+@media (max-width:780px){.oc-hero{grid-template-columns:1fr}}
+.oc-hero__title{font-family:var(--font-display);font-size:clamp(40px,7vw,72px);font-weight:600;letter-spacing:-0.04em;line-height:1;margin:14px 0 12px}
+.oc-hero__copy{color:var(--ink-2);font-size:15px;line-height:1.55;max-width:60ch;margin:0}
+
+.oc-progress{display:flex;flex-direction:column;align-items:center;gap:6px}
+.oc-progress__ring{
+  --p:0;
+  --size:96px;
+  width:var(--size);height:var(--size);border-radius:50%;
+  background:conic-gradient(var(--accent) calc(var(--p) * 1%), var(--bg-raised) 0);
+  display:grid;place-items:center;position:relative;
+}
+.oc-progress__ring::after{
+  content:"";position:absolute;inset:6px;border-radius:50%;background:var(--bg);border:1px solid var(--line);
+}
+.oc-progress__ring span{position:relative;font-family:var(--font-mono);font-size:18px;font-weight:600;color:var(--ink);z-index:1}
+.oc-progress__lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-4);letter-spacing:.12em;text-transform:uppercase}
+
+/* ---------- grid ---------- */
+.oc-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.oc-card{grid-column:span 12;background:var(--bg-raised);border:1px solid var(--line);border-radius:14px;padding:22px;transition:border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out)}
+.oc-card:hover{border-color:color-mix(in oklch, var(--accent) 30%, var(--line));box-shadow:0 12px 30px color-mix(in oklch, var(--accent) 12%, transparent)}
+.oc-card:nth-child(1){grid-column:span 7}
+.oc-card:nth-child(2){grid-column:span 5}
+.oc-card:nth-child(3){grid-column:span 7}
+.oc-card:nth-child(4){grid-column:span 5}
+.oc-card:nth-child(5){grid-column:span 6}
+.oc-card:nth-child(6){grid-column:span 6}
+.oc-card:nth-child(7){grid-column:span 12}
+@media (max-width:980px){.oc-card,.oc-card:nth-child(n){grid-column:span 12}}
+
+.oc-card__hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.oc-card__title{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-0.02em;margin:6px 0 0}
+.oc-card__right{display:flex;gap:8px;flex-shrink:0;margin-top:14px}
+
+/* ---------- form atoms ---------- */
+.ocf{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ocf__label{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.ocf__hint{font-size:12px;color:var(--ink-3);line-height:1.55;margin:6px 0 0}
+.ocf__hint a{color:var(--accent);border-bottom:1px solid color-mix(in oklch, var(--accent) 35%, transparent)}
+.ocf__hint a:hover{border-bottom-color:var(--accent)}
+.ocf__hint code{font-family:var(--font-mono);font-size:11px;background:var(--bg-sunken);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--ink-2)}
+
+.oc-input{
+  font-family:var(--font-mono);font-size:14px;color:var(--ink);
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+  transition:border-color var(--dur-fast);width:100%;
+}
+.oc-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in oklch, var(--accent) 18%, transparent)}
+
+.oc-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.oc-row{grid-template-columns:1fr}}
+
+.oc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+.oc-tokenrow{display:flex;gap:8px}
+.oc-tokenrow .oc-input{flex:1}
+
+.oc-hr{border:none;border-top:1px solid var(--line);margin:22px 0}
+
+.oc-msg{font-size:13px;line-height:1.55;color:var(--ink-2);margin:10px 0 0;padding:10px 12px;background:var(--bg-sunken);border:1px solid var(--line);border-radius:8px}
+.oc-msg--ok{border-color:color-mix(in oklch, var(--accent) 35%, var(--line));background:color-mix(in oklch, var(--accent) 8%, var(--bg-sunken));color:var(--ink)}
+.oc-msg--err{border-color:color-mix(in oklch, oklch(0.7 0.18 25) 50%, var(--line));background:color-mix(in oklch, oklch(0.7 0.18 25) 8%, var(--bg-sunken));color:var(--ink)}
+
+.oc-empty{color:var(--ink-3);font-size:13px;margin:0}
+.oc-empty code{font-family:var(--font-mono);font-size:12px;color:var(--ink-2);background:var(--bg-sunken);padding:2px 6px;border-radius:4px;border:1px solid var(--line)}
+
+.oc-details{margin-top:16px;padding:12px 14px;background:var(--bg-sunken);border:1px solid var(--line);border-radius:8px;font-size:12px;color:var(--ink-3)}
+.oc-details summary{cursor:pointer;color:var(--ink-2);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.oc-details p{margin:10px 0 0;line-height:1.6}
+.oc-details code{font-family:var(--font-mono);font-size:11px;background:var(--bg);padding:1px 5px;border-radius:4px;border:1px solid var(--line);color:var(--ink-2)}
+
+/* ---------- pills + sha ---------- */
+.oc-pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;padding:3px 9px;border-radius:999px;background:var(--bg-sunken);border:1px solid var(--line);color:var(--ink-2)}
+.oc-pill--ok{border-color:color-mix(in oklch, var(--accent) 50%, var(--line));color:var(--accent)}
+.oc-pill--warn{border-color:color-mix(in oklch, oklch(0.75 0.18 75) 55%, var(--line));color:oklch(0.78 0.16 75)}
+.oc-pill--err{border-color:color-mix(in oklch, oklch(0.7 0.2 25) 55%, var(--line));color:oklch(0.78 0.18 25)}
+
+.oc-sha{font-family:var(--font-mono);font-size:11px;background:var(--bg-sunken);padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--ink-2)}
+
+/* ---------- stats ---------- */
+.oc-stats{display:grid;grid-template-columns:1fr;gap:14px}
+.oc-stat{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.oc-stat:last-child{border-bottom:none}
+.oc-stat__k{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.oc-stat__v{font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oc-stat__v a{color:var(--accent);border-bottom:1px solid color-mix(in oklch, var(--accent) 30%, transparent)}
+.oc-stat__sub{font-family:var(--font-mono);font-size:11px;color:var(--ink-4)}
+
+/* ---------- commits ---------- */
+.oc-commits{list-style:none;padding:0;margin:0}
+.oc-commit{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.oc-commit:last-child{border-bottom:none}
+.oc-commit__msg{font-family:var(--font-mono);font-size:13px;color:var(--ink);border-bottom:none}
+.oc-commit__msg:hover{color:var(--accent)}
+.oc-commit__meta{display:flex;gap:8px;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--ink-4)}
+
+/* ---------- queue ---------- */
+.oc-queue{list-style:none;padding:0;margin:0}
+.oc-queue__item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center;font-family:var(--font-mono);font-size:12px}
+.oc-queue__item:last-child{border-bottom:none}
+.oc-queue__scope{color:var(--accent);font-size:11px}
+.oc-queue__title{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-queue__meta{color:var(--ink-4);font-size:11px}
+.oc-queue__meta em{font-style:normal;color:oklch(0.78 0.18 25)}
+
+/* ---------- table ---------- */
+.oc-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px}
+.oc-table th{text-align:left;padding:8px 10px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase;font-size:10px;border-bottom:1px solid var(--line);font-weight:500}
+.oc-table td{padding:10px;border-bottom:1px dashed var(--line);color:var(--ink-2)}
+.oc-table tr:last-child td{border-bottom:none}
+.oc-table code{font-size:11px;color:var(--ink-3)}
+
+/* ---------- spinner ---------- */
+.oc-spin{display:inline-block;width:10px;height:10px;border:1.5px solid color-mix(in oklch, var(--accent) 30%, transparent);border-top-color:var(--accent);border-radius:50%;animation:ocspin .8s linear infinite;margin-right:6px;vertical-align:-1px}
+@keyframes ocspin{to{transform:rotate(360deg)}}
+
+/* ---------- publish button (used inside editors) ---------- */
+.pb-wrap{display:inline-flex;position:relative}
+.pb-popover{
+  position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:12px;
+  padding:14px;min-width:300px;z-index:200;
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
+}
+.pb-popover__hd{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.pb-popover__row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px;color:var(--ink-2)}
+.pb-popover__row .oc-pill{margin-left:auto}
+.pb-popover__msg{margin-top:10px;font-size:12px;line-height:1.5;padding:8px 10px;border-radius:6px;background:var(--bg-sunken);border:1px solid var(--line);color:var(--ink-2)}
+.pb-popover__msg--err{border-color:color-mix(in oklch, oklch(0.7 0.18 25) 50%, var(--line))}
+.pb-popover__msg--ok{border-color:color-mix(in oklch, var(--accent) 35%, var(--line))}
+.pb-popover__actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+
+/* ---------- nav console link (owner-only) ---------- */
+.nav__console{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;
+  color:var(--accent);border:1px solid color-mix(in oklch, var(--accent) 35%, var(--line));
+  background:color-mix(in oklch, var(--accent) 6%, transparent);
+  border-radius:999px;padding:4px 10px;
+}
+.nav__console::before{content:"⚙";font-size:12px;line-height:1}
+.nav__console:hover{background:color-mix(in oklch, var(--accent) 14%, transparent);border-color:var(--accent)}

@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en" data-mode="dark" data-accent="indigo" data-monsters="on" data-cursor="comet" data-density="comfortable">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0a18" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src 'self' https://hn.algolia.com https://api.github.com; frame-ancestors 'self'">
+<title>Gurman S. — AI & C++ Systems</title>
+<meta name="description" content="Portfolio and dispatch of Gurman S. — AI inference, edge computing, local AI, and pixel monsters." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "indigo",
+  "mode": "dark",
+  "monsters": true,
+  "blogFont": "times",
+  "motion": "full",
+  "density": "roomy",
+  "cursor": "off",
+  "scrollFx": true,
+  "ownerHash": "761820b8ecc759600ff651429783c217ec5bf7fbb1bcc8784d33bf70e9deb4c2"
+}/*EDITMODE-END*/;
+/* ownerHash above is the SHA-256 of your owner password. Default unlocks with the
+   placeholder shipped in OWNER_GUIDE.md — CHANGE IT before you publish.
+   Recipe (terminal):  echo -n "your-new-password" | shasum -a 256
+   Paste the 64-char hex above. Never commit the plaintext. */
+</script>
+
+<style>
+/* ================================================================
+   TOKENS
+================================================================ */
+:root{
+  --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-serif:'Source Serif 4','Source Serif Pro',Georgia,serif;
+
+  --fs-micro:11px; --fs-xs:12px; --fs-sm:13px; --fs-base:15px; --fs-md:17px;
+  --fs-lg:22px; --fs-xl:32px; --fs-2xl:48px; --fs-3xl:72px; --fs-hero:112px;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+  --sp-8:48px; --sp-10:64px; --sp-12:96px; --sp-16:160px;
+
+  --r-sm:6px; --r:8px; --r-lg:14px; --r-xl:18px; --r-full:999px;
+
+  --ease-out:cubic-bezier(0.22,1,0.36,1);
+  --ease-soft:cubic-bezier(0.65,0,0.35,1);
+  --dur-fast:140ms; --dur-base:280ms; --dur-slow:560ms;
+  --motion:1; --density:1;
+
+  --content-w:1240px; --reading-w:680px;
+
+  --accent-h:275;
+  --accent:oklch(0.72 0.18 var(--accent-h));
+  --accent-hi:oklch(0.82 0.15 var(--accent-h));
+  --accent-lo:oklch(0.58 0.20 var(--accent-h));
+  --accent-glow:oklch(0.72 0.18 var(--accent-h) / 0.35);
+  --accent-ink:oklch(0.14 0.008 280);
+
+  --bg:oklch(0.14 0.008 280);
+  --bg-raised:oklch(0.18 0.01 280);
+  --bg-sunken:oklch(0.10 0.006 280);
+  --surface:oklch(0.22 0.012 280);
+  --line:oklch(0.28 0.014 280);
+  --line-strong:oklch(0.38 0.018 280);
+
+  --ink:oklch(0.96 0.004 280);
+  --ink-2:oklch(0.78 0.008 280);
+  --ink-3:oklch(0.58 0.010 280);
+  --ink-4:oklch(0.42 0.010 280);
+
+  color-scheme:dark;
+}
+[data-mode="light"]{
+  --bg:oklch(0.985 0.004 80);
+  --bg-raised:oklch(0.96 0.006 80);
+  --bg-sunken:oklch(1 0 0);
+  --surface:oklch(0.93 0.008 80);
+  --line:oklch(0.86 0.010 80);
+  --line-strong:oklch(0.72 0.014 80);
+  --ink:oklch(0.18 0.012 280);
+  --ink-2:oklch(0.34 0.012 280);
+  --ink-3:oklch(0.52 0.010 280);
+  --ink-4:oklch(0.68 0.008 280);
+  --accent-ink:oklch(1 0 0);
+  color-scheme:light;
+}
+[data-accent="indigo"]{--accent-h:275}
+[data-accent="purple"]{--accent-h:310}
+[data-accent="blue"]{--accent-h:245}
+[data-accent="cyan"]{--accent-h:210}
+[data-accent="green"]{--accent-h:150}
+[data-accent="yellow"]{--accent-h:95}
+[data-accent="gold"]{--accent-h:75}
+[data-accent="orange"]{--accent-h:50}
+[data-accent="red"]{--accent-h:25}
+[data-accent="pink"]{--accent-h:355}
+
+/* ================================================================
+   BASE
+================================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--font-mono);font-size:var(--fs-base);line-height:1.5;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;background:none;border:0;color:inherit}
+img,canvas,svg{max-width:100%;display:block}
+::selection{background:var(--accent);color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.shell{max-width:var(--content-w);margin:0 auto;padding:0 clamp(16px,4vw,32px);position:relative;z-index:2}
+.noise{
+  pointer-events:none;position:fixed;inset:0;z-index:1;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ================================================================
+   NAV
+================================================================ */
+.nav{
+  position:sticky;top:0;z-index:60;
+  backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
+  background:color-mix(in oklch,var(--bg) 80%,transparent);
+  border-bottom:1px solid var(--line);
+}
+.nav__row{
+  max-width:var(--content-w);margin:0 auto;padding:14px clamp(16px,4vw,32px);
+  display:flex;align-items:center;gap:14px;
+}
+.nav__logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;letter-spacing:-0.01em;font-size:15px;}
+.nav__dot{width:10px;height:10px;background:var(--accent);border-radius:3px;box-shadow:0 0 14px var(--accent-glow);}
+.nav__logo small{color:var(--ink-3);font-weight:400}
+.nav__links{display:flex;gap:4px;margin-left:24px}
+.nav__link{
+  font-family:var(--font-mono);font-size:13px;color:var(--ink-3);
+  padding:7px 12px;border-radius:8px;cursor:pointer;
+  transition:all var(--dur-fast) var(--ease-out);
+}
+.nav__link:hover{color:var(--ink);background:var(--surface)}
+.nav__link[data-active="true"]{color:var(--accent);background:color-mix(in oklch,var(--accent) 12%,transparent)}
+.nav__spacer{flex:1}
+.nav__tool{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-mono);font-size:12px;color:var(--ink-2);
+  padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg-raised);
+  transition:all var(--dur-fast) var(--ease-out);
+}
+.nav__tool:hover{border-color:var(--accent);color:var(--accent)}
+.nav__burger{display:none}
+@media (max-width:760px){
+  .nav__links{display:none}
+  .nav__burger{display:inline-flex}
+  .nav__row{gap:8px}
+  .nav__tool span:nth-child(2){display:none}
+}
+.nav__drawer{
+  position:fixed;top:60px;left:8px;right:8px;z-index:55;
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:14px;padding:10px;
+  display:flex;flex-direction:column;gap:2px;
+  animation:drawerIn 200ms var(--ease-out);
+}
+@keyframes drawerIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.nav__drawer .nav__link{padding:12px 14px;font-size:14px}
+
+/* ================================================================
+   HERO
+================================================================ */
+.hero{position:relative;padding:clamp(48px,8vw,120px) 0 clamp(40px,6vw,80px);overflow:hidden}
+.hero__grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,#000 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,#000 30%,transparent 80%);
+  opacity:.35;z-index:0;
+}
+.hero__row{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,0.85fr);
+  gap:clamp(20px,3vw,48px);align-items:center;
+}
+@media (max-width:880px){.hero__row{grid-template-columns:1fr}}
+.kicker{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.kicker::before{content:"";display:inline-block;width:14px;height:1px;background:var(--accent)}
+.hero__title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(40px,8.6vw,108px);letter-spacing:-0.04em;line-height:.92;
+  margin:14px 0 22px;text-wrap:balance;
+}
+.hero__title em{
+  font-family:var(--font-serif);font-style:italic;font-weight:500;
+  color:var(--accent);font-size:.92em;letter-spacing:-0.02em;
+}
+.hero__dek{font-size:clamp(14px,1.5vw,17px);color:var(--ink-2);max-width:54ch;line-height:1.6;margin:0 0 28px}
+.hero__cta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.hero__signal{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;
+  padding:14px;border:1px solid var(--line);border-radius:14px;
+  background:color-mix(in oklch,var(--bg-raised) 70%,transparent);
+}
+.hero__chip{
+  display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-radius:8px;
+  background:var(--bg-sunken);border:1px solid var(--line);
+}
+.hero__chip span{font-size:13px;color:var(--ink);font-weight:500}
+.hero__chip small{font-size:10px;color:var(--ink-4);letter-spacing:.05em;text-transform:uppercase}
+.hero__stage{display:flex;flex-direction:column;gap:14px;align-items:center}
+.hero__arena{
+  position:relative;aspect-ratio:1/1;width:min(380px,86vw);
+  border:1px solid var(--line);border-radius:18px;
+  background:radial-gradient(circle at 50% 40%,color-mix(in oklch,var(--accent) 18%,transparent),transparent 60%),var(--bg-raised);
+  display:grid;place-items:center;overflow:hidden;
+}
+.hero__arena::before{
+  content:"";position:absolute;inset:25%;border-radius:50%;
+  background:radial-gradient(circle,var(--accent-glow),transparent 70%);
+  filter:blur(20px);
+  animation:breathe 6s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.hero__floor{
+  position:absolute;left:8%;right:8%;bottom:8%;height:18px;border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in oklch,var(--accent) 20%,transparent),transparent 70%);
+  filter:blur(6px);
+}
+.hero__monster{position:relative;z-index:2;animation:hover 4.4s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(-2px)}50%{transform:translateY(-12px)}}
+
+/* ================================================================
+   BUTTONS / CHIPS
+================================================================ */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:13px;letter-spacing:.02em;
+  padding:10px 16px;border-radius:8px;border:1px solid var(--line);
+  background:var(--bg-raised);color:var(--ink);min-height:42px;
+  transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast),border-color var(--dur-fast),box-shadow var(--dur-fast);
+  position:relative;overflow:hidden;
+}
+.btn:hover{border-color:var(--line-strong);transform:translateY(-1px);box-shadow:0 6px 20px var(--accent-glow)}
+.btn:active{transform:translateY(0)}
+.btn--primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn--primary:hover{background:var(--accent-hi);border-color:var(--accent-hi);box-shadow:0 10px 30px var(--accent-glow)}
+.btn--ghost{background:transparent}
+.btn--sm{padding:7px 12px;font-size:12px;min-height:34px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn .arrow{display:inline-block;transition:transform var(--dur-fast) var(--ease-out)}
+.btn:hover .arrow{transform:translateX(3px)}
+.chip{
+  font-family:var(--font-mono);font-size:11px;padding:3px 8px;border-radius:6px;
+  border:1px solid var(--line);color:var(--ink-2);background:var(--bg-sunken);
+}
+.chip--accent{border-color:color-mix(in oklch,var(--accent) 50%,var(--line));color:var(--accent);background:color-mix(in oklch,var(--accent) 10%,transparent)}
+
+/* ================================================================
+   SECTIONS
+================================================================ */
+.section{padding:clamp(48px,7vw,96px) 0;position:relative}
+.section--alt{background:color-mix(in oklch,var(--bg-sunken) 50%,var(--bg))}
+.section__hd{
+  display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:end;
+  border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:32px;
+}
+@media (max-width:760px){.section__hd{grid-template-columns:1fr}}
+.section__idx{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.14em}
+.section__title{
+  font-family:var(--font-display);font-size:clamp(28px,4.5vw,56px);font-weight:600;
+  letter-spacing:-0.03em;line-height:1;margin:6px 0 0;text-wrap:balance;
+}
+.section__copy{color:var(--ink-2);line-height:1.6;margin:0}
+
+/* Reveal-on-scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 800ms var(--ease-out),transform 800ms var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ================================================================
+   PROJECTS
+================================================================ */
+.proj-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.proj-card{
+  position:relative;grid-column:span 4;
+  padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--bg-raised);
+  display:flex;flex-direction:column;gap:12px;cursor:pointer;
+  transition:transform var(--dur-base) var(--ease-out),border-color var(--dur-base),box-shadow var(--dur-base);
+  min-height:240px;
+}
+.proj-card--flag{grid-column:span 6}
+@media (max-width:980px){.proj-card,.proj-card--flag{grid-column:span 6}}
+@media (max-width:600px){.proj-card,.proj-card--flag{grid-column:span 12}}
+.proj-card:hover{
+  border-color:color-mix(in oklch,var(--accent) 50%,var(--line));
+  transform:translateY(-3px);box-shadow:0 14px 40px var(--accent-glow);
+}
+.proj-card--soon{
+  background:repeating-linear-gradient(135deg,transparent 0 18px,color-mix(in oklch,var(--line) 40%,transparent) 18px 19px),var(--bg-raised);
+  cursor:default;
+}
+.proj-card--soon:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.proj-card__meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-4);letter-spacing:.1em;text-transform:uppercase}
+.proj-card__hero{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.proj-card__hero h3{font-family:var(--font-display);font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 4px;line-height:1}
+.proj-card__hero p{color:var(--ink-3);font-size:13px;margin:0;line-height:1.4}
+.proj-card__monster{flex-shrink:0}
+.proj-card__summary{color:var(--ink-2);font-size:13px;line-height:1.55}
+.proj-card__stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+
+/* Project detail */
+.pd-hero{padding:48px 0 32px}
+.pd-hero__row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:32px;align-items:start}
+@media (max-width:880px){.pd-hero__row{grid-template-columns:1fr}}
+.pd-title{font-family:var(--font-display);font-size:clamp(40px,6vw,72px);font-weight:600;letter-spacing:-0.04em;line-height:1;margin:8px 0 16px;text-wrap:balance}
+.pd-mon{
+  padding:24px;border:1px solid var(--line);border-radius:18px;
+  background:radial-gradient(circle at 30% 20%,color-mix(in oklch,var(--accent) 14%,transparent),transparent 60%),var(--bg-raised);
+  display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;
+}
+.pd-mon__box{padding:20px;border-radius:14px;background:var(--bg-sunken);border:1px solid var(--line)}
+.pd-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:24px 0}
+.pd-stat{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--bg-raised)}
+.pd-stat dt{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.pd-stat dd{font-family:var(--font-display);font-size:28px;font-weight:600;letter-spacing:-0.02em;color:var(--accent);margin:0}
+.code-block{
+  font-family:var(--font-mono);font-size:13px;background:var(--bg-sunken);
+  border:1px solid var(--line);border-radius:8px;padding:16px;color:var(--ink-2);
+  line-height:1.6;overflow-x:auto;white-space:pre;
+}
+
+/* ================================================================
+   BLOG
+================================================================ */
+.blog-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.post-card{
+  padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--bg-raised);
+  cursor:pointer;display:flex;flex-direction:column;gap:8px;
+  transition:transform var(--dur-base) var(--ease-out),border-color var(--dur-base),box-shadow var(--dur-base);
+}
+.post-card:hover{transform:translateY(-3px);border-color:color-mix(in oklch,var(--accent) 50%,var(--line));box-shadow:0 14px 36px var(--accent-glow)}
+.post-card__meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.post-card h3{font-family:var(--font-serif);font-size:20px;font-weight:600;line-height:1.18;margin:0;text-wrap:balance}
+.post-card p{font-family:var(--font-serif);font-size:14px;color:var(--ink-3);font-style:italic;line-height:1.4;margin:0}
+
+.post-reader{max-width:var(--reading-w);margin:0 auto;padding:48px 0}
+.post-reader h1{font-family:var(--font-serif);font-size:clamp(32px,4.5vw,48px);font-weight:600;letter-spacing:-0.02em;line-height:1.1;margin:8px 0 12px;text-wrap:balance}
+.post-reader .dek{font-family:var(--font-serif);font-style:italic;font-size:20px;color:var(--ink-3);line-height:1.35;margin:0 0 28px}
+.post-reader .meta{font-size:11px;color:var(--ink-4);letter-spacing:.1em;text-transform:uppercase;display:flex;gap:14px;margin-bottom:24px}
+.post-reader .body{font-family:var(--font-serif);font-size:18px;line-height:1.7;color:var(--ink)}
+.post-reader .body h2{font-family:var(--font-display);font-size:28px;font-weight:600;letter-spacing:-0.02em;margin:36px 0 14px}
+.post-reader .body h3{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:28px 0 10px}
+.post-reader .body p{margin:0 0 18px}
+.post-reader .body blockquote{
+  font-family:var(--font-display);font-size:22px;font-weight:500;line-height:1.25;letter-spacing:-0.02em;
+  border-left:3px solid var(--accent);padding:6px 0 6px 22px;margin:28px 0;color:var(--ink);font-style:normal;
+}
+.post-reader .body code{
+  font-family:var(--font-mono);font-size:.88em;background:var(--bg-sunken);
+  border:1px solid var(--line);padding:1px 6px;border-radius:4px;
+}
+.post-reader .body pre{font-family:var(--font-mono);font-size:13px;background:var(--bg-sunken);border:1px solid var(--line);border-radius:8px;padding:16px;overflow-x:auto;line-height:1.55}
+.post-reader .body ul,.post-reader .body ol{margin:0 0 18px;padding-left:22px}
+.post-reader .body li{margin-bottom:6px}
+.post-reader .body a{color:var(--accent);border-bottom:1px solid color-mix(in oklch,var(--accent) 40%,transparent)}
+
+/* HN feed */
+.hn-list{display:flex;flex-direction:column;gap:8px}
+.hn-item{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+  padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-raised);
+  transition:all var(--dur-fast) var(--ease-out);
+}
+.hn-item:hover{border-color:color-mix(in oklch,var(--accent) 50%,var(--line));transform:translateY(-1px)}
+.hn-item__rank{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--ink-4);min-width:28px}
+.hn-item__title{font-family:var(--font-mono);font-size:13px;color:var(--ink);line-height:1.35}
+.hn-item__title small{display:block;font-size:11px;color:var(--ink-4);margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+.hn-item__pts{font-family:var(--font-display);font-size:14px;color:var(--accent);font-weight:600}
+
+/* Editor */
+.editor{
+  position:fixed;inset:0;z-index:200;background:color-mix(in oklch,var(--bg) 92%,transparent);
+  backdrop-filter:blur(12px);display:flex;flex-direction:column;
+}
+.editor__bar{
+  display:flex;align-items:center;gap:10px;padding:12px clamp(16px,3vw,32px);
+  border-bottom:1px solid var(--line);background:var(--bg-raised);
+}
+.editor__bar h2{font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;letter-spacing:-0.01em}
+.editor__body{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden;
+}
+@media (max-width:880px){.editor__body{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+.editor__pane{padding:18px clamp(16px,3vw,32px);overflow:auto}
+.editor__pane--write{border-right:1px solid var(--line);background:var(--bg-sunken)}
+@media (max-width:880px){.editor__pane--write{border-right:0;border-bottom:1px solid var(--line)}}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.field input,.field textarea,.field select{
+  font-family:var(--font-mono);font-size:14px;color:var(--ink);
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+  transition:border-color var(--dur-fast);width:100%;
+}
+.field textarea{font-family:var(--font-mono);font-size:14px;line-height:1.55;min-height:300px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.preview-card{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--bg-raised)}
+
+/* ================================================================
+   CONTACT
+================================================================ */
+.contact-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:880px){.contact-grid{grid-template-columns:1fr}}
+.contact-form{display:flex;flex-direction:column;gap:14px}
+.contact-side{padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--bg-raised);display:flex;flex-direction:column;gap:14px}
+.contact-link{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-sunken);
+  transition:all var(--dur-fast) var(--ease-out);
+}
+.contact-link:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+
+/* ================================================================
+   CURSOR FX
+================================================================ */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;will-change:transform}
+.cursor-dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 12px var(--accent-glow);transition:opacity 200ms;mix-blend-mode:plus-lighter}
+.cursor-ring{width:34px;height:34px;border:1.5px solid color-mix(in oklch,var(--accent) 60%,transparent);transition:opacity 200ms,border-color 200ms,width 200ms,height 200ms}
+.cursor-ring[data-hover="on"]{border-color:var(--accent);background:color-mix(in oklch,var(--accent) 14%,transparent);width:48px;height:48px}
+.cursor-ripple{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:9998;animation:ripple 560ms cubic-bezier(0.22,1,0.36,1) forwards}
+@keyframes ripple{to{transform:translate(-50%,-50%) scale(8);opacity:0}from{transform:translate(-50%,-50%) scale(1);opacity:.6}}
+#cursor-canvas{position:fixed;inset:0;pointer-events:none;z-index:9997}
+@media (hover:none){.cursor-dot,.cursor-ring,#cursor-canvas{display:none}}
+
+/* ================================================================
+   MODAL / TWEAKS
+================================================================ */
+.modal-bg{position:fixed;inset:0;background:color-mix(in oklch,var(--bg) 70%,transparent);backdrop-filter:blur(20px);z-index:100;display:grid;place-items:center;padding:20px;animation:fadeIn 200ms var(--ease-out)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg-raised);border:1px solid var(--line);border-radius:18px;padding:28px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:modalIn 400ms var(--ease-out)}
+@keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.tweaks{
+  position:fixed;right:18px;bottom:18px;z-index:120;width:320px;max-width:calc(100vw - 36px);
+  border:1px solid var(--line);border-radius:14px;background:var(--bg-raised);
+  box-shadow:0 20px 60px rgba(0,0,0,.4);overflow:hidden;
+}
+.tweaks__bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg-sunken)}
+.tweaks__bar h3{font-family:var(--font-display);font-size:14px;font-weight:600;margin:0;letter-spacing:-0.01em}
+.tweaks__body{padding:14px 16px;display:flex;flex-direction:column;gap:14px;max-height:60vh;overflow:auto}
+.tw-row{display:flex;flex-direction:column;gap:6px}
+.tw-row__lbl{font-family:var(--font-mono);font-size:11px;color:var(--ink-4);letter-spacing:.08em;text-transform:uppercase}
+.tw-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tw-seg button{padding:7px 8px;font-size:12px;border-right:1px solid var(--line);background:var(--bg-sunken);color:var(--ink-3)}
+.tw-seg button:last-child{border-right:0}
+.tw-seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.tw-swatch{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tw-swatch button{aspect-ratio:1/1;border-radius:8px;border:1.5px solid transparent;background:oklch(0.72 0.18 var(--h));position:relative;--h:275}
+.tw-swatch button[aria-pressed="true"]{border-color:var(--ink)}
+.tw-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+.tw-switch{width:36px;height:20px;border-radius:10px;background:var(--bg-sunken);border:1px solid var(--line);position:relative;cursor:pointer;transition:background var(--dur-fast)}
+.tw-switch[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.tw-switch::after{content:"";position:absolute;top:1px;left:1px;width:16px;height:16px;border-radius:50%;background:var(--ink);transition:transform var(--dur-fast) var(--ease-out)}
+.tw-switch[aria-pressed="true"]::after{transform:translateX(16px);background:var(--accent-ink)}
+
+/* ================================================================
+   FOOTER
+================================================================ */
+.footer{
+  border-top:1px solid var(--line);margin-top:64px;padding:32px 0;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  font-size:12px;color:var(--ink-4);letter-spacing:.05em;
+}
+.footer a,.footer button{color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer}
+.footer a:hover,.footer button:hover{color:var(--accent)}
+
+/* Owner badge */
+.owner-badge{
+  position:fixed;bottom:18px;left:18px;z-index:50;
+  display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  background:color-mix(in oklch,var(--accent) 14%,var(--bg-raised));
+  border:1px solid color-mix(in oklch,var(--accent) 50%,var(--line));
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+  cursor:pointer;backdrop-filter:blur(8px);
+}
+.owner-badge .pulse{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);animation:pulseDot 2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<canvas id="cursor-canvas"></canvas>
+<div id="root"></div>
+
+<!-- =============================================================
+     DATA
+============================================================= -->
+<script>
+window.__POSTS = [
+  {id:"edge-inference-2026",category:"ai",title:"The quiet revolution in edge inference",dek:"Why the interesting work in AI this year isn't happening in datacenters.",date:"2026-04-12",readMin:"9 min",featured:true,tags:["inference","edge","arm"],
+   body:`LEAD: Every press release is about a bigger model. Every interesting engineering story is about a smaller one.
+
+In the last six months, three shifts have compounded: NPUs in every mid-range phone, quantization that actually preserves behavior below 4 bits, and inference runtimes that finally respect memory hierarchy. Individually, each is a footnote. Together they change what an application can assume about its environment.
+
+## What changed, concretely
+
+A year ago, running a competent 7B model on a $200 SBC was a party trick — minutes to first token, RAM pinned, thermal throttling inside of a paragraph. Today it is *routine*, and the bottleneck has moved to storage bandwidth, which is a much more tractable problem.
+
+- Mixed-precision kernels that downshift at runtime under thermal pressure without model reload.
+- KV-cache paging over NVMe with prefetch hints from the decoder's own attention pattern.
+- Tokenizer fast-paths that skip Python entirely — often the biggest single win.
+
+> The most interesting inference work of 2026 fits on a device you can put in your pocket.
+
+## What to watch
+
+The sleeper trend is *locality-aware routing*: fleets of tiny models that hand queries to each other based on context, with a larger model invoked only as a fallback. The economics are brutal — a $0.02 API call collapses to nearly zero when 80% of it runs on-device.
+
+### My bet
+
+Within eighteen months, the default assumption for a consumer ML feature will be that it runs locally, and calling out to a server will be the exception that demands justification.`},
+  {id:"latency-as-ux",category:"ai",title:"Latency is the new UX",dek:"Below 100ms, interfaces feel like thought. Above it, they feel like websites.",date:"2026-04-05",readMin:"5 min",tags:["ux","inference"],
+   body:`LEAD: There is a line, somewhere around the blink rate, below which software stops feeling like software.
+
+It is the reason local-first apps feel faster than their cloud equivalents even when the cloud one is, on paper, more capable. It is the reason streaming tokens matters more than total throughput. It is why I have mostly given up on apps that put a network round-trip between me and the thing I asked for.
+
+## The 100ms budget
+
+You have roughly a hundred milliseconds to respond to an input before the user's attention starts to audit you. Not finish — just respond. A skeleton, a cursor, a character, anything. This is old news in game dev and new news in LLM-land.`},
+  {id:"market-making-rewrite",category:"quant",title:"I rewrote my market-maker in Rust. Here's what I learned.",dek:"Spoiler: the wins weren't where I expected.",date:"2026-03-28",readMin:"12 min",tags:["rust","hft"],
+   body:`LEAD: Every rewrite post has the same arc, and this one is no exception, except for the parts that were surprising.
+
+The conventional wisdom says: rewrite in Rust for performance. In my case the performance gains were real but modest — maybe 1.3× on the hot path. The real wins were elsewhere.
+
+## Borrow checker as type designer
+
+Forced to think about ownership of an order from creation to acknowledgement, I discovered my Python code was implicitly moving orders through at least four owners with no clear handoff. The Rust rewrite made that a compile error. I caught two latent race conditions this way before writing a single test.`},
+  {id:"vol-surface-regime",category:"quant",title:"Vol surface regime-switching with HMMs",dek:"A small model that quietly outperforms big ones.",date:"2026-03-14",readMin:"8 min",tags:["vol","hmm"],
+   body:`The entire field has been chasing transformers on order-book data. Meanwhile a three-state HMM on realized-vol quantiles has been sitting there, posting Sharpe.`},
+  {id:"sparse-attention",category:"research",title:"Sparse attention keeps getting rediscovered",dek:"A tour through five papers proposing the same idea with different Greek letters.",date:"2026-04-02",readMin:"7 min",tags:["attention"],
+   body:`LEAD: At this point every sparse-attention paper is a rediscovery. The question is what the rediscovery adds.
+
+This week I read five. Three of them are identical. One of them is clearly better but will be forgotten. One of them is wrong in an interesting way.`},
+  {id:"papers-i-reread",category:"research",title:"Five papers I re-read every year",dek:"Not the famous ones. The ones that taught me how to think.",date:"2026-02-18",readMin:"10 min",tags:["reading"],
+   body:`Most papers are transactional: you read them, extract the finding, move on. A few are different — they reshape how you approach a problem. Here are mine.`},
+  {id:"hidden-gem-lapce",category:"gems",title:"Hidden gem: lapce",dek:"A Rust-native editor that deserves more attention than it gets.",date:"2026-03-20",readMin:"4 min",tags:["editors"],
+   body:`Everyone defaults to VS Code and a handful defect to Zed. lapce sits in the corner being quietly excellent.`},
+  {id:"gem-ast-grep",category:"gems",title:"Hidden gem: ast-grep",dek:"grep for people who are tired of regex.",date:"2026-03-01",readMin:"3 min",tags:["tools"],
+   body:`Structural search for code. It is not new, but it is underused. If you refactor regularly and you are still using regex, you are paying a tax you don't need to.`}
+];
+
+window.__PROJECTS = [
+  {id:"ovasearch",title:"OvaSearch",subtitle:"Native C++ multimodal RAG engine",year:"2026",stack:["C++","Intel OpenVINO","GSoC 2026"],flagship:true,monsterId:"crystalith",accent:"indigo",
+    repo:"https://github.com/Lagmator22/OvaSearch",
+    summary:"A multimodal retrieval-augmented generation engine built natively in C++ on Intel OpenVINO. Selected for GSoC 2026.",
+    body:`A retrieval-augmented generation engine that runs natively in C++, accelerated by Intel OpenVINO. Designed for low-latency multimodal search across text, image, and audio embeddings without a Python runtime in the hot path.\n\nIn progress as part of Google Summer of Code 2026. Notes, design docs, and benchmarks are landing in the repo as the work happens — see GitHub for current state.`},
+  {id:"lisper",title:"Lisper",subtitle:"Local transcription studio",year:"2025",stack:["C++","whisper.cpp"],flagship:true,monsterId:"volt",accent:"gold",
+    repo:"https://github.com/Lagmator22/Lisper",
+    summary:"A desktop transcription studio built on whisper.cpp. Local-first, no API calls, no upload.",
+    body:`A native transcription studio wrapping whisper.cpp with a workflow for batch jobs, edit-as-you-listen review, and speaker labeling — all running on the device.\n\nBuilt out of frustration with web-based transcription tools that ship audio off your machine. Lisper keeps everything local: drag in audio, get a clean transcript with timestamps, edit, export.`},
+
+  // Reserved slots — placeholders for projects landing on GitHub soon.
+  // To publish: replace this entry's title/subtitle/stack/summary/body/repo with the real thing.
+  {id:"reserved-3",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"moth",accent:"purple",
+    summary:"Reserved. The next project lives here — coming to github.com/Lagmator22 soon."},
+  {id:"reserved-4",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"warden",accent:"red",
+    summary:"Reserved. Will be filled once it ships."},
+  {id:"reserved-5",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"ink",accent:"pink",
+    summary:"Reserved. Will be filled once it ships."},
+  {id:"reserved-6",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"pip",accent:"cyan",
+    summary:"Reserved. Will be filled once it ships."}
+];
+
+/* ======================================================================
+   MONSTERS — fully redesigned, Pokémon/Digimon-inspired silhouettes.
+   16×16 grid; characters: . transparent | L line | B body | S shade |
+   H highlight | E eye | A accent. zones drive 4-frame walk/wing/tail/blink.
+====================================================================== */
+const lZ = (rows,cfg={})=>[{rows,xMax:7,dx:cfg.dx||[-1,0,1,0],dy:cfg.dy||[0,0,0,0]},{rows,xMin:8,dx:(cfg.dx2||[1,0,-1,0]),dy:cfg.dy||[0,0,0,0]}];
+const wZ = (rows)=>[{rows,xMax:6,dx:[0,-1,-2,-1],dy:[0,-1,-2,-1]},{rows,xMin:9,dx:[0,1,2,1],dy:[0,-1,-2,-1]}];
+const tZ = (rows,xMax=5)=>[{rows,xMax,dx:[0,1,2,1],dy:[0,-1,0,1]}];
+const eZ = (rows)=>[{rows,xMin:5,xMax:10,dy:[0,0,0,0],blink:true}];
+
+window.__MONSTERS = [
+  // 1. Crystalith — gem dragon (Charmander-ish silhouette w/ crystal back)
+  {id:"crystalith",name:"Crystalith",archetype:"Prism wyvern",element:"prism",idle:"hover",speed:170,glow:.42,
+    palette:{L:"#1a0f3a",B:"#9b6cff",S:"#5530bf",H:"#dac8ff",E:"#fff",A:"#ffd86b"},
+    pixels:[
+      "................",
+      ".......LLL......",
+      "......LHBBL.....",
+      ".....LHBBBL.....",
+      "....LHBBBBBL....",
+      "...LHBBABBBBL...",
+      "..LHBBAAABBBBL..",
+      "..LBBBEELEEBBL..",
+      "..LBBBLLLLBBBL..",
+      "..LHBBSSSBBSBL..",
+      "...LBBBSSBBSL...",
+      "...LBBBBBBBSL...",
+      "...LL...LLSL....",
+      "..LLL...LLLL....",
+      "..L.......L.....",
+      "................"
+    ],
+    zones:[...lZ([12,13,14]), ...tZ([10,11,12,13],3)]},
+
+  // 2. Volt — spark fox (electric tail, pointy ears)
+  {id:"volt",name:"Volt",archetype:"Spark cub",element:"electric",idle:"march",speed:150,glow:.32,
+    palette:{L:"#3a2a00",B:"#ffd23c",S:"#d08800",H:"#fff1a8",E:"#2a1700",A:"#fff7da"},
+    pixels:[
+      "................",
+      "...L.........L..",
+      "..LBL.......LBL.",
+      ".LHBBL.....LBBHL",
+      "LHBBBBL...LBBBBHL".substring(0,16),
+      ".LBBBBBL.LBBBBBL",
+      "..LHBBBBBBBBBBL.",
+      "..LBBBELEEBBBBL.",
+      "..LBBBLLLLBBBBL.",
+      "..LHBBBABBBBBBL.",
+      "...LBBSSSBBSSL..",
+      "...LSSL.LLSLL...",
+      "...LSL...LSL....",
+      "..LLLL...LLLL...",
+      ".LL.........LLA.",
+      "................"
+    ],
+    zones:[...lZ([11,12,13]), ...tZ([13,14],3,{dx:[0,-1,-2,-1]})]},
+
+  // 3. Moth — winged scholar
+  {id:"moth",name:"Moth",archetype:"Paper-wing scholar",element:"research",idle:"flutter",speed:160,glow:.20,
+    palette:{L:"#27182e",B:"#b190dd",S:"#7657a6",H:"#eadfff",E:"#fff",A:"#ffbfe8"},
+    pixels:[
+      "................",
+      ".LL..........LL.",
+      "LBBL........LBBL",
+      "LBHBL......LBHBL",
+      "LBBBBL....LBBBBL",
+      "LBABBBL..LBBBABL",
+      ".LBBBBBLLBBBBBL.",
+      "..LBBBHBBHBBBL..",
+      "..LBBEELLEEBBL..",
+      "..LBBBBLLBBBBL..",
+      "..LBBBSSSSBBBL..",
+      "...LBBSSSSBBL...",
+      "...LBBSSSBBL....",
+      "....LLSSLL......",
+      "....LL..LL......",
+      "................"
+    ],
+    zones:wZ([1,2,3,4,5,6])},
+
+  // 4. Warden — armored sentinel
+  {id:"warden",name:"Warden",archetype:"Vault sentinel",element:"shield",idle:"stomp",speed:220,glow:.18,
+    palette:{L:"#2a0d0d",B:"#e25555",S:"#972727",H:"#ff9a9a",E:"#fff",A:"#ffd86b"},
+    pixels:[
+      "................",
+      "...LLLLLLLLLL...",
+      "..LBBBBBBBBBBL..",
+      ".LBHHBBABBBHHBL.",
+      ".LBBBABABABBBL..",
+      ".LBBBBEEEEBBBBL.",
+      ".LBBBBLLLLBBBBL.",
+      ".LBBBBAAAABBBBL.",
+      ".LBBBBABBABBBBL.",
+      ".LBBBSSBBSSBBBL.",
+      ".LBBSSSSSSSSBBL.",
+      "..LBBSSSSSBBL...",
+      "..LLBBL..LBBLL..",
+      ".LLSBL....LBSLL.",
+      ".L............L.",
+      "................"
+    ],
+    zones:[...lZ([12,13])]},
+
+  // 5. Ink — glyph specter
+  {id:"ink",name:"Ink",archetype:"Glyph specter",element:"draw",idle:"drift",speed:200,glow:.28,
+    palette:{L:"#190820",B:"#d670ca",S:"#9c3894",H:"#ffb6ea",E:"#fff",A:"#62eeff"},
+    pixels:[
+      "................",
+      ".......LLL......",
+      "......LHBBL.....",
+      ".....LHBBBBL....",
+      "....LHBBBBBBL...",
+      "...LHBBEELEBBL..",
+      "...LBBBLLLLBBL..",
+      "...LBBBABBABBL..",
+      "...LBBBBABBBBL..",
+      "...LBBSSSSBBL...",
+      "....LBSSSSBL....",
+      "....LLBSSBLL....",
+      "...LL.LSSL.LL...",
+      "..LL...LL...LL..",
+      ".L....LSSL....L.",
+      "..............LA"
+    ],
+    zones:[...tZ([11,12,13,14],8)]},
+
+  // 6. Pip — optic ooze (big eye)
+  {id:"pip",name:"Pip",archetype:"Optic ooze",element:"lens",idle:"blink",speed:200,glow:.30,
+    palette:{L:"#032229",B:"#63ebff",S:"#1498b2",H:"#d3fbff",E:"#032229",A:"#ffd76c"},
+    pixels:[
+      "................",
+      "................",
+      ".....LLLLLL.....",
+      "....LHBBBBHL....",
+      "...LHBBBBBBHL...",
+      "..LHBBEEEEBBHL..",
+      "..LBBEELLEEBBL..",
+      "..LBBELLLLEBBL..",
+      "..LBBELLLLEBBL..",
+      "..LHBBEEEEBBHL..",
+      "...LBBBBBBBBL...",
+      "....LBBSSSSBL...",
+      ".....LSSSSSL....",
+      ".....LL..LL.....",
+      "....LL....LL....",
+      "................"
+    ],
+    zones:eZ([5,6,7,8,9])},
+
+  // 7. Ticker — market bat
+  {id:"moth2",name:"Ticker",archetype:"Market bat",element:"flow",idle:"flutter",speed:165,glow:.18,
+    palette:{L:"#062316",B:"#4fd89b",S:"#1b8a59",H:"#baf4d4",E:"#062316",A:"#ffca45"},
+    pixels:[
+      "................",
+      ".LL..........LL.",
+      "LBSL........LSBL",
+      "LBBSL......LSBBL",
+      ".LBBBL....LBBBL.",
+      "..LBBBL..LBBBL..",
+      "...LBBBLLBBBL...",
+      "...LBBEELEEBBL..",
+      "...LBBALLLABBL..",
+      "...LBBBLLLBBBL..",
+      "...LBSSSSSSBBL..",
+      "....LBSSSSSBL...",
+      "....LBBBBBBBL...",
+      ".....LBL..LBL...",
+      ".....LL...LL....",
+      "................"
+    ],
+    zones:wZ([1,2,3,4,5])},
+
+  // 8. Dend — root drake
+  {id:"dend",name:"Dend",archetype:"Root drake",element:"link",idle:"march",speed:175,glow:.18,
+    palette:{L:"#281401",B:"#f08d3e",S:"#aa4f16",H:"#ffcb94",E:"#281401",A:"#ffd86b"},
+    pixels:[
+      "................",
+      "....LLLLLLLL....",
+      "...LHBBBBBBHL...",
+      "..LHBBABABBBHL..",
+      "..LBBABABABBBL..",
+      ".LHBBEELLEEBBHL.",
+      ".LBBBBLLLLBBBBL.",
+      ".LBBBSSSSSSBBBL.",
+      ".LBBBSSSSSSBBBL.",
+      "..LBBBBBBBBBBL..",
+      "..LBBBBBBBBBBL..",
+      "..LLBBL..LBBLL..",
+      ".LLSBL....LBSLL.",
+      "LLA..........ALL",
+      "................",
+      "................"
+    ],
+    zones:[...lZ([11,12,13]), ...tZ([13],4,{dx:[-1,0,1,0]})]},
+
+  // 9. Sprout — bloom saurian
+  {id:"sprout",name:"Sprout",archetype:"Bloom saurian",element:"grow",idle:"march",speed:165,glow:.20,
+    palette:{L:"#182700",B:"#b8e24a",S:"#6c9d17",H:"#e7f8ad",E:"#182700",A:"#ff5fae"},
+    pixels:[
+      "....A...........",
+      "..LALAL.........",
+      "...LAL..........",
+      "....L...........",
+      "...LBL..........",
+      "..LHBBL.........",
+      ".LHBBBBL........",
+      ".LBBBBBBL.......",
+      ".LBBEELBBLLL....",
+      ".LBBBLLBBBBBL...",
+      "..LBBBBBBBBBBL..",
+      "..LHBBBASSBBBL..",
+      "...LBBBSSSBBBL..",
+      "...LBBBBBBBBBL..",
+      "...LL.....LLL...",
+      "..LL.......LL..."
+    ],
+    zones:[...lZ([14,15])]},
+
+  // 10. Blipp — type automaton
+  {id:"blipp",name:"Blipp",archetype:"Type automaton",element:"type",idle:"stomp",speed:215,glow:.22,
+    palette:{L:"#000d21",B:"#5e9dff",S:"#1a5cd1",H:"#c6ddff",E:"#000d21",A:"#ffd86b"},
+    pixels:[
+      "................",
+      "...L.LLLLLLL.L..",
+      "...LLBBBBBBBLL..",
+      "..LBHHBBBBHHBL..",
+      "..LBBBBEEBBBBL..",
+      ".LHBBBLLLLBBBHL.",
+      ".LBBBBAAAAABBBL.",
+      ".LBBBBABBBABBBL.",
+      ".LBBBBABBBABBBL.",
+      ".LBBBBAAAAABBBL.",
+      ".LBBBSSSSSSBBBL.",
+      "..LBBBBBBBBBBL..",
+      "..LLBBL..LBBLL..",
+      ".LLSBL....LBSLL.",
+      ".L............L.",
+      "................"
+    ],
+    zones:[...lZ([12,13])]}
+];
+
+/* ----- Renderer ----- */
+const _MI = Object.fromEntries(window.__MONSTERS.map(m=>[m.id,m]));
+const _active = new Set();
+function _motion(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--motion"))||1}
+function _phase(m,now,hover){const mo=Math.max(.35,_motion());const sp=(m.speed||180)/(hover?1.35:1)/mo;return [0,1,2,1][Math.floor(now/sp)%4]}
+function _off(m,x,y,phase){let dx=0,dy=0;for(const z of m.zones||[]){if(z.rows&&!z.rows.includes(y))continue;if(z.xMin!=null&&x<z.xMin)continue;if(z.xMax!=null&&x>z.xMax)continue;dx+=z.dx?.[phase]||0;dy+=z.dy?.[phase]||0}return [dx,dy]}
+function _cell(m,x,y){const r=m.pixels[y];return r&&r[x]&&r[x]!=="."?r[x]:null}
+function _draw(ctx,m,now,hover,px){
+  const mot=_motion();const grid=m.pixels[0].length;const phase=_phase(m,now,hover);const dim=grid*px;ctx.clearRect(0,0,dim,dim);
+  if(document.documentElement.getAttribute("data-monsters")==="off")return;
+  let oy=0,sy=1,rot=0;
+  if(mot>0){
+    if(m.idle==="hover"){oy=Math.sin(now*.0042)*2.4;sy=1+Math.sin(now*.0038)*.03}
+    else if(m.idle==="flutter"){oy=Math.sin(now*.0062)*1.8;rot=Math.sin(now*.0045)*.03}
+    else if(m.idle==="stomp"){oy=[0,.4,1.2,.4][phase];sy=[1,.985,.96,.985][phase]}
+    else if(m.idle==="drift"){oy=Math.sin(now*.0034)*2.0;rot=Math.sin(now*.0032)*.03}
+    else if(m.idle==="blink"){oy=Math.sin(now*.0041)*1.2}
+    else{oy=Math.sin(now*.005)*.9}
+  }
+  if(hover){oy-=2.4;rot+=.02}
+  const cx=dim/2;const sw=Math.round(grid*px*.5*(mot>0?[1,.94,.88,.94][phase]:1)*(hover?.92:1));const sh=Math.max(2,Math.round(grid*px*.1));const sy2=grid*px-Math.round(1.2*px);
+  // soft elliptical shadow
+  ctx.save();ctx.fillStyle="rgba(0,0,0,.30)";ctx.beginPath();ctx.ellipse(cx,sy2+sh/2,sw*.5,sh*.7,0,0,Math.PI*2);ctx.fill();ctx.restore();
+
+  ctx.save();ctx.translate(cx,cx);if(rot)ctx.rotate(rot);ctx.scale(1,sy);ctx.translate(-cx,-cx+oy);
+
+  // ambient accent halo (richer than rect)
+  if(m.glow){
+    const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#fff";
+    const g=ctx.createRadialGradient(cx,cx,grid*px*.15,cx,cx,grid*px*.55);
+    g.addColorStop(0,acc);g.addColorStop(1,"transparent");
+    ctx.save();ctx.globalAlpha=m.glow*.55;ctx.globalCompositeOperation="lighter";ctx.fillStyle=g;ctx.fillRect(0,0,grid*px,grid*px);ctx.restore();
+  }
+
+  const blink=mot>0&&((m.idle==="blink"&&now%2800<160)||(hover&&now%2200<120));
+  const breath=mot>0?Math.sin(now*.003)*.06+1:1;
+
+  // Pass 1: base body fill with cel-shaded sub-cell detail (each grid cell -> 4 sub-pixels)
+  for(let y=0;y<grid;y++){
+    const row=m.pixels[y]||"";
+    for(let x=0;x<grid;x++){
+      const ch=row[x];if(!ch||ch===".")continue;
+      const baseColor=blink&&ch==="E"?m.palette.L:m.palette[ch];if(!baseColor)continue;
+      const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
+      const px0=(x+dx)*px,py0=(y+dy)*px,h=px/2;
+      // base
+      ctx.fillStyle=baseColor;ctx.fillRect(px0,py0,px,px);
+      // top-left highlight + bottom-right shadow (cel shading)
+      if(ch==="B"||ch==="S"||ch==="A"||ch==="H"){
+        ctx.fillStyle="rgba(255,255,255,.16)";ctx.fillRect(px0,py0,px,h);
+        ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(px0,py0+h,px,h);
+      }
+      // scale/plate stripe for S
+      if(ch==="S"){ctx.fillStyle="rgba(0,0,0,.22)";ctx.fillRect(px0,py0+px-Math.max(1,h*.5),px,Math.max(1,h*.5))}
+      // accent (A) gets bright top spark
+      if(ch==="A"){ctx.fillStyle="rgba(255,255,255,.42)";ctx.fillRect(px0+h*.5,py0,h,h*.7)}
+      // highlight (H) glows
+      if(ch==="H"){ctx.fillStyle="rgba(255,255,255,.30)";ctx.fillRect(px0,py0,px,h*.6)}
+    }
+  }
+  // Pass 2: outline — darken outer-edge cells where neighbor is empty (fang/silhouette definition)
+  ctx.fillStyle=m.palette.L||"rgba(0,0,0,.55)";
+  for(let y=0;y<grid;y++){
+    for(let x=0;x<grid;x++){
+      const ch=_cell(m,x,y);if(!ch||ch==="L")continue;
+      const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
+      const px0=(x+dx)*px,py0=(y+dy)*px;
+      // bottom edge if cell below empty
+      if(!_cell(m,x,y+1))ctx.fillRect(px0,py0+px-1,px,1);
+      // right edge if cell right empty
+      if(!_cell(m,x+1,y))ctx.fillRect(px0+px-1,py0,1,px);
+      // top edge highlight inverse — use thin dark line for crisp silhouette top
+      if(!_cell(m,x,y-1)){ctx.save();ctx.globalAlpha=.5;ctx.fillRect(px0,py0,px,1);ctx.restore()}
+      if(!_cell(m,x-1,y)){ctx.save();ctx.globalAlpha=.5;ctx.fillRect(px0,py0,1,px);ctx.restore()}
+    }
+  }
+  // Pass 3: eye glints + accent sparkles (dynamic)
+  if(!blink){
+    const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#fff";
+    for(let y=0;y<grid;y++)for(let x=0;x<grid;x++){
+      if(_cell(m,x,y)!=="E")continue;
+      const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
+      const px0=(x+dx)*px,py0=(y+dy)*px;
+      // bright glint (top-left quarter)
+      ctx.fillStyle="rgba(255,255,255,.95)";ctx.fillRect(px0+1,py0+1,Math.max(1,px*.35),Math.max(1,px*.35));
+    }
+    // pulsing accent ember on A cells
+    if(mot>0){
+      const pulse=.4+Math.sin(now*.005)*.4;
+      for(let y=0;y<grid;y++)for(let x=0;x<grid;x++){
+        if(_cell(m,x,y)!=="A")continue;
+        const [dx,dy]=mot>0?_off(m,x,y,phase):[0,0];
+        ctx.save();ctx.globalAlpha=pulse*.6;ctx.globalCompositeOperation="lighter";ctx.fillStyle=acc;
+        ctx.fillRect((x+dx)*px-px*.2,(y+dy)*px-px*.2,px*1.4,px*1.4);ctx.restore();
+      }
+    }
+  }
+  // breathing scale on idle
+  if(breath!==1&&mot>0){/* breathing already applied via sy */}
+  ctx.restore();
+}
+function _tick(now){for(const c of _active){if(!document.contains(c)){_active.delete(c);continue}const m=_MI[c.dataset.monster];if(!m||!c.__ctx)continue;_draw(c.__ctx,m,now,c.__hover,c.__px)}requestAnimationFrame(_tick)}
+requestAnimationFrame(_tick);
+function _mount(canvas){
+  if(canvas.__mounted)return;
+  const m=_MI[canvas.dataset.monster];if(!m)return;
+  const grid=m.pixels[0].length;const size=parseInt(canvas.dataset.size||"96",10);const px=Math.max(3,Math.floor(size/grid));const dim=px*grid;const dpr=Math.max(2,window.devicePixelRatio||1);
+  canvas.width=dim*dpr;canvas.height=dim*dpr;canvas.style.width=dim+"px";canvas.style.height=dim+"px";canvas.style.imageRendering="auto";
+  const ctx=canvas.getContext("2d");ctx.imageSmoothingEnabled=false;ctx.setTransform(dpr,0,0,dpr,0,0);
+  canvas.__ctx=ctx;canvas.__px=px;canvas.__hover=false;canvas.__mounted=true;
+  canvas.addEventListener("mouseenter",()=>{canvas.__hover=true});
+  canvas.addEventListener("mouseleave",()=>{canvas.__hover=false});
+  _active.add(canvas);
+}
+window.MonsterRenderer={mount:_mount,mountAll:(root=document)=>root.querySelectorAll("canvas[data-monster]").forEach(_mount),MONSTERS:window.__MONSTERS,INDEX:_MI};
+</script>
+
+<!-- =============================================================
+     CURSOR FX + scroll reveal
+============================================================= -->
+<script>
+(function(){
+  if (window.matchMedia('(hover: none)').matches) return;
+  const dot = document.createElement('div'); dot.className = 'cursor-dot'; document.body.appendChild(dot);
+  const ring = document.createElement('div'); ring.className = 'cursor-ring'; document.body.appendChild(ring);
+  let tx=0,ty=0,rx=0,ry=0,vis=false;
+  const INT='a,button,[role=button],.proj-card,.post-card,.hn-item,.contact-link,.hero__chip,.btn,.nav__link,.nav__tool,canvas[data-monster]';
+
+  const cv = document.getElementById('cursor-canvas');
+  const cx = cv.getContext('2d');
+  function resize(){const dpr=Math.max(1,devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';cx.setTransform(dpr,0,0,dpr,0,0)}
+  resize();window.addEventListener('resize',resize,{passive:true});
+
+  const particles=[];let lastX=0,lastY=0;
+  function emit(x,y,style){
+    if(style==='off')return;
+    const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#9b6cff';
+    const dx=x-lastX,dy=y-lastY,sp=Math.hypot(dx,dy);lastX=x;lastY=y;
+    if(style==='comet'){
+      for(let i=0;i<3;i++)particles.push({x:x+(Math.random()-.5)*4,y:y+(Math.random()-.5)*4,vx:-dx*.04+(Math.random()-.5)*.4,vy:-dy*.04+(Math.random()-.5)*.4+.2,r:Math.random()*2.2+1.6,life:1,decay:.022,c:accent,style});
+    }else if(style==='pixel'){
+      const g=4;particles.push({x:Math.round(x/g)*g,y:Math.round(y/g)*g,vx:0,vy:.6,r:g,life:1,decay:.05,c:accent,style});
+    }else if(style==='nova'){
+      for(let i=0;i<4;i++){const a=Math.random()*Math.PI*2,v=.8+Math.random()*1.6;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:Math.random()*2.4+1.2,life:1,decay:.028,c:accent,style})}
+    }else if(style==='ribbon'){
+      particles.push({x,y,vx:dx*.05,vy:dy*.05,r:7,life:1,decay:.022,c:accent,style});
+    }else if(style==='spark'){
+      const n=Math.min(6,1+Math.floor(sp/4));
+      for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=2+Math.random()*3;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-.3,r:1.4,life:1,decay:.06,c:accent,style})}
+    }
+  }
+  function loop(){
+    rx+=(tx-rx)*.18;ry+=(ty-ry)*.18;
+    dot.style.transform=`translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)`;
+    ring.style.transform=`translate3d(${rx}px,${ry}px,0) translate(-50%,-50%)`;
+    cx.clearRect(0,0,cv.width,cv.height);
+    cx.globalCompositeOperation='lighter';
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];p.x+=p.vx;p.y+=p.vy;
+      if(p.style==='spark'){p.vy+=.12;p.vx*=.985}
+      else if(p.style==='comet'){p.vx*=.96;p.vy*=.96;p.vy+=.04}
+      else if(p.style==='nova'){p.vx*=.94;p.vy*=.94}
+      else if(p.style==='pixel'){p.vy+=.05}
+      p.life-=p.decay;
+      if(p.life<=0){particles.splice(i,1);continue}
+      cx.globalAlpha=p.life*.9;cx.fillStyle=p.c;
+      if(p.style==='pixel'){cx.fillRect(p.x-p.r/2,p.y-p.r/2,p.r,p.r)}
+      else if(p.style==='ribbon'){cx.globalAlpha=p.life*.5;cx.beginPath();cx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);cx.fill()}
+      else if(p.style==='spark'){cx.fillRect(p.x-1,p.y-1,2,2);cx.globalAlpha=p.life*.4;cx.beginPath();cx.arc(p.x,p.y,p.r*p.life*1.6,0,Math.PI*2);cx.fill()}
+      else{cx.beginPath();cx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);cx.fill()}
+    }
+    cx.globalAlpha=1;cx.globalCompositeOperation='source-over';
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  function curStyle(){return document.documentElement.getAttribute('data-cursor')||'comet'}
+  function applyOff(){
+    const off=curStyle()==='off';
+    document.documentElement.style.cursor=off?'':'none';
+    dot.style.display=off?'none':'';
+    ring.style.display=off?'none':'';
+    if(off){particles.length=0;cx.clearRect(0,0,cv.width,cv.height)}
+  }
+  applyOff();
+  new MutationObserver(applyOff).observe(document.documentElement,{attributes:true,attributeFilter:['data-cursor']});
+
+  let lastEmit=0;
+  window.addEventListener('pointermove',e=>{
+    if(curStyle()==='off')return;
+    tx=e.clientX;ty=e.clientY;
+    if(!vis){vis=true;rx=tx;ry=ty;dot.style.opacity='1';ring.style.opacity='1'}
+    const now=performance.now();
+    if(now-lastEmit>20){emit(tx,ty,curStyle());lastEmit=now}
+  },{passive:true});
+  window.addEventListener('pointerleave',()=>{vis=false;dot.style.opacity='0';ring.style.opacity='0'},{passive:true});
+  document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest(INT);ring.setAttribute('data-hover',el?'on':'off')});
+  window.addEventListener('click',e=>{
+    const style=curStyle();if(style==='off')return;
+    const r=document.createElement('div');r.className='cursor-ripple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),580);
+    if(style==='spark'||style==='nova') for(let i=0;i<10;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*4;particles.push({x:e.clientX,y:e.clientY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:2,life:1,decay:.045,c:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),style:'spark'})}
+  },{passive:true});
+})();
+
+/* Reveal-on-scroll */
+const _io = new IntersectionObserver((entries)=>{
+  for(const e of entries) if(e.isIntersecting) e.target.classList.add('in');
+},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+window.__observeReveal = (root=document)=>root.querySelectorAll('.reveal:not(.in)').forEach(el=>_io.observe(el));
+</script>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+const POSTS = window.__POSTS;
+const PROJECTS = window.__PROJECTS;
+const MONSTERS = window.__MONSTERS;
+const ACCENTS = ['indigo', 'purple', 'blue', 'cyan', 'green', 'yellow', 'gold', 'orange', 'red', 'pink'];
+
+/* ============= ROUTER ============= */
+function parseHash() {const h = location.hash.replace(/^#\/?/, '') || 'home';const [a, b] = h.split('/');return { a, b: b || null };}
+function nav(to) {location.hash = '#/' + to;window.scrollTo({ top: 0, behavior: 'instant' });}
+
+function useRoute() {
+  const [r, setR] = useState(parseHash());
+  useEffect(() => {const fn = () => setR(parseHash());addEventListener('hashchange', fn);return () => removeEventListener('hashchange', fn);}, []);
+  return r;
+}
+
+/* ============= TWEAKS ============= */
+const TW_KEY = 'gurman.tweaks.v2';
+function loadTweaks() {
+  try {const r = localStorage.getItem(TW_KEY);if (r) return { ...window.TWEAK_DEFAULTS, ...JSON.parse(r) };} catch {}
+  return { ...window.TWEAK_DEFAULTS };
+}
+function applyTweaks(t) {
+  const r = document.documentElement;
+  r.setAttribute('data-mode', t.mode === 'system' ? matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark' : t.mode);
+  r.setAttribute('data-accent', t.accent);
+  r.setAttribute('data-monsters', t.monsters ? 'on' : 'off');
+  r.setAttribute('data-cursor', t.cursor || 'comet');
+  r.setAttribute('data-density', t.density);
+  r.style.setProperty('--motion', t.motion === 'none' ? '0' : t.motion === 'subtle' ? '.5' : '1');
+  r.style.setProperty('--density', t.density === 'compact' ? '.85' : t.density === 'roomy' ? '1.15' : '1');
+  const fonts = { 'source-serif': "'Source Serif 4',Georgia,serif", 'georgia': "Georgia,serif", 'garamond': "'EB Garamond',Georgia,serif", 'times': "'Times New Roman',serif" };
+  r.style.setProperty('--font-serif', fonts[t.blogFont] || fonts['source-serif']);
+}
+
+function useTweaks() {
+  const [t, setT] = useState(loadTweaks);
+  useEffect(() => {applyTweaks(t);try {localStorage.setItem(TW_KEY, JSON.stringify(t));} catch {}}, [t]);
+  const set = useCallback((k, v) => setT((s) => {
+    const next = typeof k === 'object' ? { ...s, ...k } : { ...s, [k]: v };
+    try {parent.postMessage({ type: '__edit_mode_set_keys', edits: typeof k === 'object' ? k : { [k]: v } }, '*');} catch {}
+    return next;
+  }), []);
+  return [t, set];
+}
+
+/* ============= OWNER AUTH (sha-256 hash compare) ============= */
+async function sha256(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* ============= NAV ============= */
+function Nav({ route, onTweaks, onCmdk, owner }) {
+  const [open, setOpen] = useState(false);
+  const links = [{ k: 'home', l: 'index' }, { k: 'projects', l: 'projects' }, { k: 'blog', l: 'dispatch' }, { k: 'about', l: 'about' }, { k: 'contact', l: 'contact' }];
+  return <>
+    <header className="nav">
+      <div className="nav__row">
+        <a className="nav__logo" onClick={(e) => {e.preventDefault();nav('home');}} href="#/home">
+          <span className="nav__dot" /><span>Gurman S<small>.dev</small></span>
+        </a>
+        <nav className="nav__links">
+          {links.map((l) => <a key={l.k} className="nav__link" data-active={route.a === l.k || l.k === 'blog' && route.a === 'post'} onClick={() => nav(l.k)}>{l.l}</a>)}
+        </nav>
+        <div className="nav__spacer" />
+        {owner && <span className="chip chip--accent" style={{ padding: '5px 10px' }}>owner</span>}
+        <button className="nav__tool" onClick={onCmdk} title="search"><span>⌘</span><span>K</span></button>
+        <button className="nav__tool" onClick={onTweaks} title="theme">
+          <span style={{ width: 10, height: 10, background: 'var(--accent)', borderRadius: 2, boxShadow: '0 0 8px var(--accent-glow)', display: 'inline-block' }} /><span>theme</span>
+        </button>
+        <button className="nav__tool nav__burger" onClick={() => setOpen((o) => !o)} aria-label="menu">≡</button>
+      </div>
+    </header>
+    {open &&
+    <div className="nav__drawer">
+        {links.map((l) => <a key={l.k} className="nav__link" data-active={route.a === l.k} onClick={() => {setOpen(false);nav(l.k);}}>{l.l}</a>)}
+      </div>
+    }
+  </>;
+}
+
+/* ============= MONSTER ============= */
+function Monster({ id, size = 96 }) {
+  const ref = useRef();
+  useEffect(() => {if (ref.current) window.MonsterRenderer?.mount(ref.current);}, [id, size]);
+  return <canvas ref={ref} data-monster={id} data-size={size} />;
+}
+
+/* ============= HOME ============= */
+function Home({ posts, projects, onPost, onProject }) {
+  const [activeMonster, setActiveMonster] = useState(MONSTERS[0]);
+  useEffect(() => {window.__observeReveal?.();}, []);
+  const featured = projects.filter((p) => p.flagship);
+
+  return (
+    <main>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero__grid" />
+        <div className="shell">
+          <div className="hero__row">
+            <div>
+              <div className="kicker reveal">portfolio · 2026</div>
+              <h1 className="hero__title reveal">i build <em>small</em> things that quietly outperform big ones.</h1>
+              <p className="hero__dek reveal">AI engineer. C++ systems engineer. I work on AI inference, edge computing, and local AI — among other things. Pixel monsters that move included.</p>
+              <div className="hero__cta reveal">
+                <button className="btn btn--primary" onClick={() => nav('projects')}>enter the work <span className="arrow">→</span></button>
+                <button className="btn" onClick={() => nav('blog')}>open the dispatch</button>
+                <button className="btn btn--ghost" onClick={() => nav('contact')}>say hi</button>
+              </div>
+              <div className="hero__signal reveal">
+                <div className="hero__chip"><span>10</span><small>projects</small></div>
+                <div className="hero__chip"><span>{posts.length}</span><small>posts</small></div>
+                <div className="hero__chip"><span>10</span><small>familiars</small></div>
+                <div className="hero__chip"><span>local-first</span><small>by default</small></div>
+              </div>
+            </div>
+            <div className="hero__stage reveal">
+              <div className="hero__arena">
+                <div className="hero__floor" />
+                <div className="hero__monster"><Monster id={activeMonster.id} size={220} /></div>
+              </div>
+              <div style={{ padding: 14, border: '1px solid var(--line)', borderRadius: 14, background: 'var(--bg-raised)', width: '100%', maxWidth: 380 }}>
+                <div className="kicker">active familiar</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, letterSpacing: '-0.01em', margin: '4px 0 2px' }}>{activeMonster.name}</div>
+                <div style={{ color: 'var(--ink-3)', fontSize: 13, marginBottom: 10 }}>{activeMonster.archetype}</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {MONSTERS.map((m) => <button key={m.id} onClick={() => setActiveMonster(m)} title={m.name}
+                  style={{ padding: 6, borderRadius: 8, background: activeMonster.id === m.id ? 'color-mix(in oklch,var(--accent) 14%,var(--bg-sunken))' : 'var(--bg-sunken)', border: '1px solid ' + (activeMonster.id === m.id ? 'var(--accent)' : 'var(--line)') }}>
+                    <Monster id={m.id} size={36} />
+                  </button>)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROJECTS PREVIEW */}
+      <section className="section section--alt">
+        <div className="shell">
+          <div className="section__hd reveal">
+            <div>
+              <div className="section__idx">02 / WORK</div>
+              <h2 className="section__title">Selected projects.</h2>
+            </div>
+            <p className="section__copy">Hi-leverage tools, shipped. Each one paired with a familiar that lives in code.</p>
+          </div>
+          <div className="proj-grid">
+            {projects.slice(0, 6).map((p, i) =>
+            <article key={p.id} className={`proj-card reveal ${p.flagship ? 'proj-card--flag' : ''}`} onClick={() => onProject(p)}>
+                <div className="proj-card__meta"><span>{p.year}</span><span>{p.flagship ? 'flagship' : 'project'}</span></div>
+                <div className="proj-card__hero">
+                  <div>
+                    <h3>{p.title}</h3>
+                    <p>{p.subtitle}</p>
+                  </div>
+                  <div className="proj-card__monster"><Monster id={p.monsterId} size={p.flagship ? 80 : 60} /></div>
+                </div>
+                <div className="proj-card__summary">{p.summary}</div>
+                <div className="proj-card__stack">{p.stack.map((s) => <span key={s} className="chip">{s}</span>)}</div>
+              </article>
+            )}
+          </div>
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <button className="btn" onClick={() => nav('projects')}>see all projects <span className="arrow">→</span></button>
+          </div>
+        </div>
+      </section>
+
+      {/* DISPATCH PREVIEW */}
+      <section className="section">
+        <div className="shell">
+          <div className="section__hd reveal">
+            <div>
+              <div className="section__idx">03 / DISPATCH</div>
+              <h2 className="section__title">Recent writing.</h2>
+            </div>
+            <p className="section__copy">Long-form notes on inference, markets, and tools.</p>
+          </div>
+          <div className="blog-cols">
+            {posts.slice(0, 4).map((p) =>
+            <article key={p.id} className="post-card reveal" onClick={() => onPost(p)}>
+                <div className="post-card__meta"><span>{p.category}</span><span>{p.readMin}</span></div>
+                <h3>{p.title}</h3>
+                <p>{p.dek}</p>
+                <div style={{ marginTop: 'auto', display: 'flex', gap: 6, flexWrap: 'wrap', paddingTop: 8 }}>
+                  {(p.tags || []).slice(0, 3).map((t) => <span key={t} className="chip">#{t}</span>)}
+                </div>
+              </article>
+            )}
+          </div>
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <button className="btn" onClick={() => nav('blog')}>read the dispatch <span className="arrow">→</span></button>
+          </div>
+        </div>
+      </section>
+    </main>);
+
+}
+
+/* ============= PROJECTS GRID ============= */
+function ProjectsPage({ projects, onProject }) {
+  useEffect(() => {window.__observeReveal?.();}, []);
+  return (
+    <main className="section">
+      <div className="shell">
+        <div className="section__hd reveal">
+          <div>
+            <div className="section__idx">PROJECTS · {projects.length}</div>
+            <h2 className="section__title">Everything I've shipped.</h2>
+          </div>
+          <p className="section__copy">From a 14M-param diffusion model to a 600-line webcam daemon. Hover for the familiar.</p>
+        </div>
+        <div className="proj-grid">
+          {projects.map((p) =>
+          <article key={p.id} className="proj-card reveal" onClick={() => onProject(p)}>
+              <div className="proj-card__meta"><span>{p.year}</span><span>{p.stack[0]}</span></div>
+              <div className="proj-card__hero">
+                <div>
+                  <h3>{p.title}</h3>
+                  <p>{p.subtitle}</p>
+                </div>
+                <div className="proj-card__monster"><Monster id={p.monsterId} size={60} /></div>
+              </div>
+              <div className="proj-card__summary">{p.summary}</div>
+              <div className="proj-card__stack">{p.stack.map((s) => <span key={s} className="chip">{s}</span>)}</div>
+            </article>
+          )}
+        </div>
+      </div>
+    </main>);
+
+}
+
+/* ============= PROJECT DETAIL ============= */
+function ProjectPage({ project, owner, onSave, onBack }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(() => ({ ...project, stack: (project.stack || []).join(', ') }));
+  useEffect(() => {window.__observeReveal?.();setTimeout(() => window.MonsterRenderer?.mountAll(document), 50);}, [project.id]);
+  const m = MONSTERS.find((x) => x.id === project.monsterId);
+
+  const save = () => {
+    const next = { ...draft, stack: draft.stack.split(',').map((s) => s.trim()).filter(Boolean) };
+    onSave(next);
+    setEditing(false);
+  };
+
+  return (
+    <main>
+      <div className="shell">
+        <div style={{ padding: '24px 0' }}><button className="btn btn--sm" onClick={onBack}>← back</button></div>
+      </div>
+      <section className="pd-hero">
+        <div className="shell">
+          <div className="pd-hero__row">
+            <div>
+              <div className="kicker">{project.year} · {project.stack.join(' · ')}</div>
+              {!editing ? <>
+                <h1 className="pd-title reveal">{project.title}</h1>
+                <p style={{ fontSize: 'var(--fs-md)', color: 'var(--ink-2)', lineHeight: 1.5, margin: '0 0 8px' }}>{project.subtitle}</p>
+                <p style={{ color: 'var(--ink-3)', lineHeight: 1.6, margin: '0 0 16px' }}>{project.summary}</p>
+                {project.body && <p style={{ color: 'var(--ink-2)', lineHeight: 1.7, margin: '0 0 20px', whiteSpace: 'pre-wrap' }}>{project.body}</p>}
+                {project.stats?.length && <dl className="pd-stats">{project.stats.map((s) =>
+                  <div key={s.label} className="pd-stat"><dt>{s.label}</dt><dd>{s.value}</dd></div>
+                  )}</dl>}
+                {project.code && <pre className="code-block">{project.code}</pre>}
+                {owner && <button className="btn btn--primary btn--sm" style={{ marginTop: 16 }} onClick={() => setEditing(true)}>edit project</button>}
+              </> : <div style={{ display: 'grid', gap: 12 }}>
+                <div className="field"><label>title</label><input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></div>
+                <div className="field"><label>subtitle</label><input value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} /></div>
+                <div className="field"><label>summary</label><textarea style={{ minHeight: 80 }} value={draft.summary} onChange={(e) => setDraft({ ...draft, summary: e.target.value })} /></div>
+                <div className="field"><label>body</label><textarea value={draft.body || ''} onChange={(e) => setDraft({ ...draft, body: e.target.value })} /></div>
+                <div className="field"><label>stack (comma-separated)</label><input value={draft.stack} onChange={(e) => setDraft({ ...draft, stack: e.target.value })} /></div>
+                <div className="field"><label>monster</label>
+                  <select value={draft.monsterId} onChange={(e) => setDraft({ ...draft, monsterId: e.target.value })}>
+                    {MONSTERS.map((m) => <option key={m.id} value={m.id}>{m.name} — {m.archetype}</option>)}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn btn--primary" onClick={save}>save</button>
+                  <button className="btn" onClick={() => setEditing(false)}>cancel</button>
+                </div>
+              </div>}
+            </div>
+            <div className="pd-mon reveal">
+              <div className="pd-mon__box"><Monster id={project.monsterId} size={180} /></div>
+              <div>
+                <div className="kicker">familiar</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '4px 0 4px' }}>{m?.name}</div>
+                <div style={{ color: 'var(--ink-3)', fontSize: 13 }}>{m?.archetype}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>);
+
+}
+
+/* ============= MARKDOWN-LITE RENDERER ============= */
+function renderMarkdown(src) {
+  if (!src) return [];
+  const lines = src.split('\n');
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const ln = lines[i];
+    if (ln.startsWith('## ')) {out.push({ k: 'h2', t: ln.slice(3) });i++;continue;}
+    if (ln.startsWith('### ')) {out.push({ k: 'h3', t: ln.slice(4) });i++;continue;}
+    if (ln.startsWith('> ')) {out.push({ k: 'q', t: ln.slice(2) });i++;continue;}
+    if (ln.startsWith('LEAD: ')) {out.push({ k: 'lead', t: ln.slice(6) });i++;continue;}
+    if (ln.startsWith('- ')) {const items = [];while (i < lines.length && lines[i].startsWith('- ')) {items.push(lines[i].slice(2));i++;}out.push({ k: 'ul', items });continue;}
+    if (ln.startsWith('```')) {const lang = ln.slice(3);const buf = [];i++;while (i < lines.length && !lines[i].startsWith('```')) {buf.push(lines[i]);i++;}i++;out.push({ k: 'code', t: buf.join('\n'), lang });continue;}
+    if (ln.trim() === '') {i++;continue;}
+    out.push({ k: 'p', t: ln });i++;
+  }
+  return out;
+}
+function escHtml(s) {return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');}
+function safeUrl(u) {const t = String(u || '').trim();if (/^(javascript|data|vbscript):/i.test(t)) return '#';return t;}
+function inline(t) {
+  // Escape FIRST so authored content can't inject script/iframe/etc.
+  return escHtml(t).
+  replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').
+  replace(/\*([^*]+)\*/g, '<i>$1</i>').
+  replace(/`([^`]+)`/g, '<code>$1</code>').
+  replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, txt, url) => `<a href="${escHtml(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${txt}</a>`);
+}
+
+/* ============= BLOG ============= */
+function Blog({ posts, owner, onPost, onNewPost, onEditPost, onDeletePost }) {
+  const [filter, setFilter] = useState('all');
+  const [hn, setHn] = useState([]);
+  const [hnLoading, setHnLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  useEffect(() => {window.__observeReveal?.();});
+  useEffect(() => {
+    setHnLoading(true);
+    fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=10').
+    then((r) => r.json()).then((d) => {setHn(d.hits || []);setHnLoading(false);}).
+    catch(() => setHnLoading(false));
+  }, []);
+  const filtered = posts.filter((p) => (filter === 'all' || p.category === filter) && (search === '' || p.title.toLowerCase().includes(search.toLowerCase()) || p.dek.toLowerCase().includes(search.toLowerCase())));
+  const cats = ['all', 'ai', 'quant', 'research', 'gems'];
+
+  return (
+    <main className="section">
+      <div className="shell">
+        <div className="section__hd reveal">
+          <div>
+            <div className="section__idx">DISPATCH · LIVE</div>
+            <h2 className="section__title">Field notes from the work.</h2>
+          </div>
+          <p className="section__copy">Posts on inference, markets, and tools. Pulled with HN front page for context.</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.5fr) minmax(280px,1fr)', gap: 32 }}>
+          <div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+              {cats.map((c) =>
+              <button key={c} className="btn btn--sm" style={{ background: filter === c ? 'var(--accent)' : 'var(--bg-raised)', color: filter === c ? 'var(--accent-ink)' : 'var(--ink)', borderColor: filter === c ? 'var(--accent)' : 'var(--line)' }}
+              onClick={() => setFilter(c)}>{c}</button>
+              )}
+              <input placeholder="search…" value={search} onChange={(e) => setSearch(e.target.value)}
+              style={{ marginLeft: 'auto', padding: '8px 12px', background: 'var(--bg-sunken)', border: '1px solid var(--line)', borderRadius: 8, color: 'var(--ink)', fontFamily: 'var(--font-mono)', fontSize: 13, minWidth: 160 }} />
+              {owner && <button className="btn btn--primary btn--sm" onClick={onNewPost}>+ new post</button>}
+            </div>
+            <div className="blog-cols">
+              {filtered.map((p) =>
+              <article key={p.id} className="post-card reveal" onClick={() => onPost(p)}>
+                  <div className="post-card__meta"><span>{p.category}</span><span>{p.readMin}</span></div>
+                  <h3>{p.title}</h3>
+                  <p>{p.dek}</p>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 'auto', paddingTop: 8, alignItems: 'center' }}>
+                    {(p.tags || []).slice(0, 3).map((t) => <span key={t} className="chip">#{t}</span>)}
+                    {owner && <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+                      <button className="btn btn--sm" onClick={(e) => {e.stopPropagation();onEditPost(p);}}>edit</button>
+                      <button className="btn btn--sm" onClick={(e) => {e.stopPropagation();if (confirm('delete?')) onDeletePost(p);}}>×</button>
+                    </span>}
+                  </div>
+                </article>
+              )}
+            </div>
+          </div>
+
+          <aside style={{ padding: 20, border: '1px solid var(--line)', borderRadius: 14, background: 'var(--bg-raised)', position: 'sticky', top: 80, alignSelf: 'start' }}>
+            <div className="kicker">hn front page · live</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, margin: '6px 0 14px' }}>What's on Hacker News.</div>
+            <div className="hn-list">
+              {hnLoading ? <div style={{ color: 'var(--ink-4)', fontSize: 12 }}>loading…</div> :
+              hn.length === 0 ? <div style={{ color: 'var(--ink-4)', fontSize: 12 }}>offline</div> :
+              hn.slice(0, 8).map((h, i) =>
+              <a key={h.objectID} className="hn-item" href={h.url || `https://news.ycombinator.com/item?id=${h.objectID}`} target="_blank" rel="noopener">
+                    <span className="hn-item__rank">{String(i + 1).padStart(2, '0')}</span>
+                    <div className="hn-item__title">{h.title}<small>{(h.url || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0] || 'self'}</small></div>
+                    <span className="hn-item__pts">{h.points || 0}</span>
+                  </a>
+              )
+              }
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>);
+
+}
+
+/* ============= POST READER ============= */
+function PostReader({ post, onBack }) {
+  useEffect(() => {window.scrollTo(0, 0);window.__observeReveal?.();}, [post?.id]);
+  if (!post) return <main className="section"><div className="shell">post not found <button className="btn btn--sm" onClick={onBack}>back</button></div></main>;
+  const blocks = renderMarkdown(post.body);
+  return (
+    <main className="post-reader shell">
+      <button className="btn btn--sm" onClick={onBack} style={{ marginBottom: 18 }}>← back</button>
+      <div className="kicker">{post.category}</div>
+      <h1 className="reveal">{post.title}</h1>
+      <p className="dek reveal">{post.dek}</p>
+      <div className="meta"><span>{post.date}</span><span>·</span><span>{post.readMin}</span></div>
+      <div className="body">
+        {blocks.map((b, i) => {
+          if (b.k === 'h2') return <h2 key={i} className="reveal">{b.t}</h2>;
+          if (b.k === 'h3') return <h3 key={i} className="reveal">{b.t}</h3>;
+          if (b.k === 'lead') return <p key={i} className="reveal" style={{ fontSize: 22, fontStyle: 'italic', color: 'var(--ink-2)', marginBottom: 24 }} dangerouslySetInnerHTML={{ __html: inline(b.t) }} />;
+          if (b.k === 'q') return <blockquote key={i} className="reveal">{b.t}</blockquote>;
+          if (b.k === 'ul') return <ul key={i} className="reveal">{b.items.map((it, j) => <li key={j} dangerouslySetInnerHTML={{ __html: inline(it) }} />)}</ul>;
+          if (b.k === 'code') return <pre key={i} className="reveal"><code>{b.t}</code></pre>;
+          return <p key={i} className="reveal" dangerouslySetInnerHTML={{ __html: inline(b.t) }} />;
+        })}
+      </div>
+    </main>);
+
+}
+
+/* ============= ABOUT ============= */
+function About() {
+  useEffect(() => {window.__observeReveal?.();}, []);
+  return (
+    <main className="section">
+      <div className="shell" style={{ maxWidth: 780 }}>
+        <div className="kicker reveal">about</div>
+        <h1 className="reveal" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px,5vw,64px)', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1, margin: '8px 0 24px', textWrap: 'balance' }}>
+          I write software that runs <em style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--accent)', fontWeight: 500 }}>where you are</em>.
+        </h1>
+        <div style={{ fontFamily: 'var(--font-serif)', fontSize: 18, lineHeight: 1.7, color: 'var(--ink-2)' }}>
+          <p className="reveal">I'm an AI engineer and C++ systems engineer. My current obsessions are edge inference, local-first AI, and the kind of tooling that makes one engineer feel like ten.</p>
+          <p className="reveal">I work in the language the problem asks for — usually C++ for the inner loop, Rust for the shell, TypeScript for the surface. I dislike abstractions that don't earn their keep, and most of them don't.</p>
+          <p className="reveal">When I'm not shipping, I'm reading papers, drawing pixel monsters, or arguing about borrow-checker ergonomics with people who should know better.</p>
+        </div>
+        <div style={{ marginTop: 32, padding: 24, border: '1px solid var(--line)', borderRadius: 14, background: 'var(--bg-raised)' }} className="reveal">
+          <div className="kicker">currently</div>
+          <ul style={{ margin: '10px 0 0', paddingLeft: 18, lineHeight: 1.7, color: 'var(--ink-2)', fontFamily: 'var(--font-mono)', fontSize: 14 }}>
+            <li>building EdgeLlama — 4-bit LLM runtime for ARM</li>
+            <li>writing <i>The quiet revolution in edge inference</i> series</li>
+            <li>maintaining the dispatch (above)</li>
+          </ul>
+        </div>
+      </div>
+    </main>);
+
+}
+
+/* ============= CONTACT ============= */
+function Contact() {
+  const [sent, setSent] = useState(false);
+  const [draft, setDraft] = useState({ name: '', email: '', msg: '' });
+  useEffect(() => {window.__observeReveal?.();}, []);
+  const submit = (e) => {e.preventDefault();setSent(true);setTimeout(() => setSent(false), 3000);setDraft({ name: '', email: '', msg: '' });};
+  return (
+    <main className="section">
+      <div className="shell">
+        <div className="section__hd reveal">
+          <div><div className="section__idx">CONTACT</div><h2 className="section__title">Drop a line.</h2></div>
+          <p className="section__copy">For collaborations, commissions, or to argue about C++.</p>
+        </div>
+        <div className="contact-grid">
+          <form className="contact-form reveal" onSubmit={submit}>
+            <div className="field"><label>your name</label><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required /></div>
+            <div className="field"><label>email</label><input type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} required /></div>
+            <div className="field"><label>message</label><textarea value={draft.msg} onChange={(e) => setDraft({ ...draft, msg: e.target.value })} required /></div>
+            <div><button className="btn btn--primary" type="submit">send <span className="arrow">→</span></button>
+              {sent && <span style={{ marginLeft: 14, color: 'var(--accent)', fontSize: 13 }}>received. I'll reply soon.</span>}</div>
+            <p style={{ color: 'var(--ink-4)', fontSize: 11, margin: 0 }}>this form is a placeholder — wire to formspree, plunk, or your inbox of choice. nothing is sent yet.</p>
+          </form>
+          <aside className="contact-side reveal">
+            <div className="kicker">elsewhere</div>
+            <a className="contact-link" href="https://github.com/Lagmator22" target="_blank" rel="noopener"><span>github</span><span>→</span></a>
+            <a className="contact-link" href="#"><span>twitter / x</span><span>→</span></a>
+            <a className="contact-link" href="#"><span>linkedin</span><span>→</span></a>
+            <a className="contact-link" href="mailto:hi@example.com"><span>email</span><span>→</span></a>
+          </aside>
+        </div>
+      </div>
+    </main>);
+
+}
+
+/* ============= TWEAKS PANEL ============= */
+function TweaksPanel({ open, onClose, tweaks, setTweak }) {
+  if (!open) return null;
+  const Seg = ({ k, opts }) =>
+  <div className="tw-seg">
+      {opts.map((o) => <button key={o.v} aria-pressed={tweaks[k] === o.v} onClick={() => setTweak(k, o.v)}>{o.l}</button>)}
+    </div>;
+
+  return (
+    <div className="tweaks">
+      <div className="tweaks__bar"><h3>Tweaks</h3><button className="btn btn--sm" onClick={onClose}>×</button></div>
+      <div className="tweaks__body" style={{ fontFamily: "\"JetBrains Mono\"", alignItems: "baseline", textAlign: "justify", fontSize: "11.2px", width: "400.75px" }}>
+        <div className="tw-row"><div className="tw-row__lbl">accent</div>
+          <div className="tw-swatch">
+            {ACCENTS.map((a) =>
+            <button key={a} aria-pressed={tweaks.accent === a} onClick={() => setTweak('accent', a)}
+            title={a} style={{ ['--h']: { indigo: 275, purple: 310, blue: 245, cyan: 210, green: 150, yellow: 95, gold: 75, orange: 50, red: 25, pink: 355 }[a] }} />
+            )}
+          </div>
+        </div>
+        <div className="tw-row"><div className="tw-row__lbl">mode</div>
+          <Seg k="mode" opts={[{ v: 'dark', l: 'dark' }, { v: 'light', l: 'light' }, { v: 'system', l: 'auto' }]} />
+        </div>
+        <div className="tw-row"><div className="tw-row__lbl">cursor flare</div>
+          <Seg k="cursor" opts={[{ v: 'off', l: 'off' }, { v: 'comet', l: 'comet' }, { v: 'pixel', l: 'pixel' }, { v: 'nova', l: 'nova' }, { v: 'ribbon', l: 'ribbon' }, { v: 'spark', l: 'spark' }]} />
+        </div>
+        <div className="tw-row"><div className="tw-row__lbl">motion</div>
+          <Seg k="motion" opts={[{ v: 'full', l: 'full' }, { v: 'subtle', l: 'subtle' }, { v: 'none', l: 'none' }]} />
+        </div>
+        <div className="tw-row"><div className="tw-row__lbl">density</div>
+          <Seg k="density" opts={[{ v: 'compact', l: 'compact' }, { v: 'comfortable', l: 'comfy' }, { v: 'roomy', l: 'roomy' }]} />
+        </div>
+        <div className="tw-row"><div className="tw-row__lbl">blog font</div>
+          <Seg k="blogFont" opts={[{ v: 'source-serif', l: 'serif' }, { v: 'georgia', l: 'georgia' }, { v: 'garamond', l: 'garamond' }, { v: 'times', l: 'times' }]} />
+        </div>
+        <div className="tw-toggle">
+          <span style={{ color: 'var(--ink-3)' }}>monsters</span>
+          <button className="tw-switch" aria-pressed={tweaks.monsters} onClick={() => setTweak('monsters', !tweaks.monsters)} />
+        </div>
+        <div className="tw-toggle">
+          <span style={{ color: 'var(--ink-3)' }}>scroll fx</span>
+          <button className="tw-switch" aria-pressed={tweaks.scrollFx} onClick={() => setTweak('scrollFx', !tweaks.scrollFx)} />
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ============= POST EDITOR ============= */
+function PostEditor({ post, onSave, onCancel, onExport }) {
+  const [d, setD] = useState(post || { id: '', category: 'ai', title: '', dek: '', date: new Date().toISOString().slice(0, 10), readMin: '5 min', tags: [], body: '' });
+  const [tagsRaw, setTagsRaw] = useState((post?.tags || []).join(', '));
+  const blocks = renderMarkdown(d.body);
+  const save = () => {
+    const id = d.id || d.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'post-' + Date.now();
+    onSave({ ...d, id, tags: tagsRaw.split(',').map((s) => s.trim()).filter(Boolean) });
+  };
+  return (
+    <div className="editor">
+      <div className="editor__bar">
+        <button className="btn btn--sm" onClick={onCancel}>← cancel</button>
+        <h2>{post ? 'edit post' : 'new post'}</h2>
+        <div style={{ flex: 1 }} />
+        <button className="btn btn--sm" onClick={() => onExport(d)}>copy json</button>
+        <button className="btn btn--primary btn--sm" onClick={save}>save</button>
+      </div>
+      <div className="editor__body">
+        <div className="editor__pane editor__pane--write">
+          <div className="field"><label>title</label><input value={d.title} onChange={(e) => setD({ ...d, title: e.target.value })} placeholder="The thing I learned this week" /></div>
+          <div className="field"><label>dek (subtitle)</label><input value={d.dek} onChange={(e) => setD({ ...d, dek: e.target.value })} placeholder="One line of context." /></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            <div className="field"><label>category</label>
+              <select value={d.category} onChange={(e) => setD({ ...d, category: e.target.value })}>
+                {['ai', 'quant', 'research', 'gems'].map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="field"><label>read time</label><input value={d.readMin} onChange={(e) => setD({ ...d, readMin: e.target.value })} /></div>
+            <div className="field"><label>date</label><input value={d.date} onChange={(e) => setD({ ...d, date: e.target.value })} /></div>
+          </div>
+          <div className="field"><label>tags (comma)</label><input value={tagsRaw} onChange={(e) => setTagsRaw(e.target.value)} placeholder="rust, edge, inference" /></div>
+          <div className="field"><label>body — markdown</label>
+            <textarea style={{ minHeight: '40vh' }} value={d.body} onChange={(e) => setD({ ...d, body: e.target.value })}
+            placeholder={"LEAD: Your hook sentence.\n\n## A heading\n\nSome **bold** and *italic*.\n\n- list item\n- another\n\n> a pull quote\n\n```js\ncode block\n```"} />
+          </div>
+          <details style={{ marginTop: 10, fontSize: 12, color: 'var(--ink-3)' }}>
+            <summary style={{ cursor: 'pointer' }}>markdown cheatsheet</summary>
+            <ul style={{ paddingLeft: 18, lineHeight: 1.7 }}>
+              <li><code>LEAD: …</code> — italic lead paragraph</li>
+              <li><code>## H2</code> / <code>### H3</code></li>
+              <li><code>**bold**</code>, <code>*italic*</code>, <code>`inline code`</code></li>
+              <li><code>- item</code> for lists</li>
+              <li><code>&gt; …</code> for pull quotes</li>
+              <li>fenced <code>```code```</code></li>
+              <li><code>[label](url)</code> for links</li>
+            </ul>
+          </details>
+        </div>
+        <div className="editor__pane">
+          <div className="kicker">live preview</div>
+          <div className="post-reader" style={{ padding: 0, marginTop: 14 }}>
+            <h1 style={{ margin: '4px 0 8px', fontSize: 32 }}>{d.title || 'Untitled'}</h1>
+            {d.dek && <p className="dek" style={{ fontSize: 18 }}>{d.dek}</p>}
+            <div className="meta"><span>{d.date}</span><span>·</span><span>{d.readMin}</span><span>·</span><span>{d.category}</span></div>
+            <div className="body" style={{ fontSize: 16 }}>
+              {blocks.map((b, i) => {
+                if (b.k === 'h2') return <h2 key={i}>{b.t}</h2>;
+                if (b.k === 'h3') return <h3 key={i}>{b.t}</h3>;
+                if (b.k === 'lead') return <p key={i} style={{ fontSize: 18, fontStyle: 'italic', color: 'var(--ink-2)' }} dangerouslySetInnerHTML={{ __html: inline(b.t) }} />;
+                if (b.k === 'q') return <blockquote key={i}>{b.t}</blockquote>;
+                if (b.k === 'ul') return <ul key={i}>{b.items.map((it, j) => <li key={j} dangerouslySetInnerHTML={{ __html: inline(it) }} />)}</ul>;
+                if (b.k === 'code') return <pre key={i}><code>{b.t}</code></pre>;
+                return <p key={i} dangerouslySetInnerHTML={{ __html: inline(b.t) }} />;
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ============= OWNER LOGIN ============= */
+function OwnerLogin({ onClose, onUnlock, expectedHash }) {
+  const [pw, setPw] = useState('');
+  const [err, setErr] = useState(false);
+  const try_ = async () => {
+    const h = await sha256(pw);
+    if (h === expectedHash) {onUnlock();onClose();} else setErr(true);
+  };
+  return (
+    <div className="modal-bg" onClick={(e) => {if (e.target === e.currentTarget) onClose();}}>
+      <div className="modal">
+        <div className="kicker">owner access</div>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', margin: '8px 0 12px' }}>Unlock editing.</h2>
+        <p style={{ color: 'var(--ink-2)', lineHeight: 1.5, margin: '0 0 16px', fontSize: 14 }}>
+          Password is matched against a sha-256 hash baked into the file. The page never sees plaintext, and no plaintext lives in the source. Setup recipe is in <code>OWNER_GUIDE.md</code> (linked in footer); change <code>TWEAK_DEFAULTS.ownerHash</code> by computing the hash of your own password.
+        </p>
+        <input type="password" autoFocus value={pw} onChange={(e) => {setPw(e.target.value);setErr(false);}}
+        onKeyDown={(e) => e.key === 'Enter' && try_()}
+        placeholder="password"
+        style={{ width: '100%', padding: 12, fontFamily: 'var(--font-mono)', fontSize: 14, background: 'var(--bg-sunken)', border: `1px solid ${err ? 'oklch(0.72 0.18 25)' : 'var(--line)'}`, color: 'var(--ink)', borderRadius: 8, outline: 'none' }} />
+        {err && <div style={{ color: 'oklch(0.72 0.18 25)', fontSize: 12, marginTop: 6 }}>nope</div>}
+        <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
+          <button className="btn" onClick={onClose}>cancel</button>
+          <button className="btn btn--primary" onClick={try_}>unlock</button>
+        </div>
+        <details style={{ marginTop: 14, fontSize: 11, color: 'var(--ink-4)' }}>
+          <summary style={{ cursor: 'pointer' }}>how to change password</summary>
+          <p style={{ lineHeight: 1.6, marginTop: 8 }}>In a terminal: <code>echo -n "yourpassword" | shasum -a 256</code>. Paste the resulting 64-char hex into <code>TWEAK_DEFAULTS.ownerHash</code> at the top of the html file. Commit. Done.</p>
+        </details>
+      </div>
+    </div>);
+
+}
+
+/* ============= COMMAND PALETTE ============= */
+function Cmdk({ open, onClose, posts, projects }) {
+  const [q, setQ] = useState('');
+  useEffect(() => {if (open) setQ('');}, [open]);
+  if (!open) return null;
+  const items = [
+  ...['home', 'projects', 'blog', 'about', 'contact'].map((p) => ({ k: 'nav', l: 'go: ' + p, act: () => {nav(p);onClose();} })),
+  ...projects.map((p) => ({ k: 'project', l: 'project · ' + p.title, act: () => {nav('projects/' + p.id);onClose();} })),
+  ...posts.map((p) => ({ k: 'post', l: 'post · ' + p.title, act: () => {nav('post/' + p.id);onClose();} }))].
+  filter((i) => q === '' || i.l.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div className="modal-bg" onClick={(e) => {if (e.target === e.currentTarget) onClose();}}>
+      <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--line)', borderRadius: 14, width: 'min(560px,94vw)', overflow: 'hidden' }}>
+        <input autoFocus placeholder="type to search…" value={q} onChange={(e) => setQ(e.target.value)}
+        style={{ width: '100%', padding: '14px 18px', fontFamily: 'var(--font-mono)', fontSize: 14, background: 'transparent', color: 'var(--ink)', border: 0, borderBottom: '1px solid var(--line)', outline: 'none' }} />
+        <div style={{ maxHeight: '50vh', overflow: 'auto' }}>
+          {items.slice(0, 20).map((it, i) =>
+          <button key={i} onClick={it.act}
+          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 18px', fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink-2)', background: 'transparent', border: 0, cursor: 'pointer' }}
+          onMouseOver={(e) => e.currentTarget.style.background = 'var(--surface)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
+              {it.l}
+            </button>
+          )}
+          {items.length === 0 && <div style={{ padding: 18, color: 'var(--ink-4)', fontSize: 12 }}>no matches</div>}
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ============= APP ============= */
+function App() {
+  const route = useRoute();
+  const [tweaks, setTweak] = useTweaks();
+  const [tweakOpen, setTweakOpen] = useState(false);
+  const [cmdkOpen, setCmdkOpen] = useState(false);
+  const [owner, setOwner] = useState(() => sessionStorage.getItem('gurman.owner.session') === 'on');
+  const [showLogin, setShowLogin] = useState(false);
+  const [editingPost, setEditingPost] = useState(null); // post object or {} for new
+  const [customPosts, setCustomPosts] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.posts.v2')) || [];} catch {return [];}});
+  const [customProjs, setCustomProjs] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.projs.v2')) || {};} catch {return {};}});
+  useEffect(() => {localStorage.setItem('gurman.custom.posts.v2', JSON.stringify(customPosts));}, [customPosts]);
+  useEffect(() => {localStorage.setItem('gurman.custom.projs.v2', JSON.stringify(customProjs));}, [customProjs]);
+
+  // ⌘K
+  useEffect(() => {
+    const fn = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {e.preventDefault();setCmdkOpen((o) => !o);} else
+      if (e.key === 'Escape') {setCmdkOpen(false);setTweakOpen(false);}
+    };
+    addEventListener('keydown', fn);return () => removeEventListener('keydown', fn);
+  }, []);
+
+  // host tweak protocol
+  useEffect(() => {
+    const fn = (ev) => {
+      if (ev.data?.type === '__activate_edit_mode') setTweakOpen(true);
+      if (ev.data?.type === '__deactivate_edit_mode') setTweakOpen(false);
+    };
+    addEventListener('message', fn);
+    parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => removeEventListener('message', fn);
+  }, []);
+
+  useEffect(() => {setTimeout(() => window.MonsterRenderer?.mountAll(document), 50);}, [route.a, route.b, owner]);
+
+  const allPosts = useMemo(() => [...customPosts, ...POSTS.filter((p) => !customPosts.find((c) => c.id === p.id))], [customPosts]);
+  const allProjs = useMemo(() => PROJECTS.map((p) => customProjs[p.id] ? { ...p, ...customProjs[p.id] } : p), [customProjs]);
+
+  const savePost = (p) => {
+    setCustomPosts((prev) => {
+      const others = prev.filter((x) => x.id !== p.id);
+      return [p, ...others];
+    });
+    setEditingPost(null);
+  };
+  const deletePost = (p) => {
+    setCustomPosts((prev) => {
+      const exists = prev.find((x) => x.id === p.id);
+      if (exists) return prev.filter((x) => x.id !== p.id);
+      // mark as hidden
+      return [{ ...p, _hidden: true }, ...prev];
+    });
+  };
+  const exportPost = (p) => {
+    navigator.clipboard.writeText(JSON.stringify(p, null, 2));
+    alert('JSON copied. Paste into data/posts.js to publish permanently.');
+  };
+
+  const toggleOwner = () => {
+    if (owner) {sessionStorage.removeItem('gurman.owner.session');setOwner(false);} else
+    setShowLogin(true);
+  };
+
+  let page;
+  if (route.a === 'home') page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} />;else
+  if (route.a === 'projects' && route.b) {
+    const p = allProjs.find((x) => x.id === route.b);
+    page = p ? <ProjectPage project={p} owner={owner} onSave={(patch) => setCustomProjs((c) => ({ ...c, [p.id]: { ...(c[p.id] || {}), ...patch } }))} onBack={() => nav('projects')} /> :
+    <main className="section"><div className="shell">not found <button className="btn btn--sm" onClick={() => nav('projects')}>back</button></div></main>;
+  } else
+  if (route.a === 'projects') page = <ProjectsPage projects={allProjs} onProject={(p) => nav('projects/' + p.id)} />;else
+  if (route.a === 'blog') page = <Blog posts={allPosts.filter((p) => !p._hidden)} owner={owner} onPost={(p) => nav('post/' + p.id)} onNewPost={() => setEditingPost({})} onEditPost={(p) => setEditingPost(p)} onDeletePost={deletePost} />;else
+  if (route.a === 'post' && route.b) {
+    const p = allPosts.find((x) => x.id === route.b);
+    page = <PostReader post={p} onBack={() => nav('blog')} />;
+  } else
+  if (route.a === 'about') page = <About />;else
+  if (route.a === 'contact') page = <Contact />;else
+  page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} />;
+
+  return <>
+    <Nav route={route} owner={owner} onTweaks={() => setTweakOpen((o) => !o)} onCmdk={() => setCmdkOpen(true)} />
+    <div data-screen-label={route.a}>{page}</div>
+    <footer className="footer shell">
+      <div>© 2026 · pixel monsters · local first</div>
+      <div style={{ display: 'flex', gap: 14 }}>
+        <a href="https://github.com/Lagmator22" target="_blank" rel="noopener noreferrer">github</a>
+        <a href="OWNER_GUIDE.md" target="_blank" rel="noopener noreferrer">owner guide</a>
+        <button onClick={toggleOwner}>{owner ? 'lock' : 'owner sign-in'}</button>
+      </div>
+    </footer>
+    {owner && <button className="owner-badge" onClick={toggleOwner} title="click to lock"><span className="pulse" />owner mode</button>}
+    <TweaksPanel open={tweakOpen} onClose={() => setTweakOpen(false)} tweaks={tweaks} setTweak={setTweak} />
+    <Cmdk open={cmdkOpen} onClose={() => setCmdkOpen(false)} posts={allPosts} projects={allProjs} />
+    {showLogin && <OwnerLogin onClose={() => setShowLogin(false)} onUnlock={() => {sessionStorage.setItem('gurman.owner.session', 'on');setOwner(true);}} expectedHash={tweaks.ownerHash} />}
+    {editingPost && <PostEditor post={editingPost.id ? editingPost : null} onSave={savePost} onCancel={() => setEditingPost(null)} onExport={exportPost} />}
+  </>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

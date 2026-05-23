@@ -1,0 +1,83 @@
+[
+  {
+    "id": "ovasearch",
+    "title": "OvaSearch",
+    "subtitle": "Native C++ multimodal RAG engine",
+    "year": "2026",
+    "stack": [
+      "C++",
+      "Intel OpenVINO",
+      "GSoC 2026"
+    ],
+    "flagship": true,
+    "monsterId": "crystalith",
+    "accent": "indigo",
+    "repo": "https://github.com/Lagmator22/OvaSearch",
+    "summary": "A multimodal retrieval-augmented generation engine built natively in C++ on Intel OpenVINO. Selected for GSoC 2026.",
+    "body": "A retrieval-augmented generation engine that runs natively in C++, accelerated by Intel OpenVINO. Designed for low-latency multimodal search across text, image, and audio embeddings without a Python runtime in the hot path.\n\nIn progress as part of Google Summer of Code 2026. Notes, design docs, and benchmarks are landing in the repo as the work happens — see GitHub for current state."
+  },
+  {
+    "id": "lisper",
+    "title": "Lisper",
+    "subtitle": "Local transcription studio",
+    "year": "2025",
+    "stack": [
+      "C++",
+      "whisper.cpp"
+    ],
+    "flagship": true,
+    "monsterId": "volt",
+    "accent": "gold",
+    "repo": "https://github.com/Lagmator22/Lisper",
+    "summary": "A desktop transcription studio built on whisper.cpp. Local-first, no API calls, no upload.",
+    "body": "A native transcription studio wrapping whisper.cpp with a workflow for batch jobs, edit-as-you-listen review, and speaker labeling — all running on the device.\n\nBuilt out of frustration with web-based transcription tools that ship audio off your machine. Lisper keeps everything local: drag in audio, get a clean transcript with timestamps, edit, export."
+  },
+  {
+    "id": "reserved-3",
+    "title": "reserved",
+    "subtitle": "a slot held for the next project",
+    "year": "soon",
+    "stack": [
+      "TBA"
+    ],
+    "monsterId": "moth",
+    "accent": "purple",
+    "summary": "Reserved. The next project lives here — coming to github.com/Lagmator22 soon."
+  },
+  {
+    "id": "reserved-4",
+    "title": "reserved",
+    "subtitle": "a slot held for the next project",
+    "year": "soon",
+    "stack": [
+      "TBA"
+    ],
+    "monsterId": "warden",
+    "accent": "red",
+    "summary": "Reserved. Will be filled once it ships."
+  },
+  {
+    "id": "reserved-5",
+    "title": "reserved",
+    "subtitle": "a slot held for the next project",
+    "year": "soon",
+    "stack": [
+      "TBA"
+    ],
+    "monsterId": "ink",
+    "accent": "pink",
+    "summary": "Reserved. Will be filled once it ships."
+  },
+  {
+    "id": "reserved-6",
+    "title": "reserved",
+    "subtitle": "a slot held for the next project",
+    "year": "soon",
+    "stack": [
+      "TBA"
+    ],
+    "monsterId": "pip",
+    "accent": "cyan",
+    "summary": "Reserved. Will be filled once it ships."
+  }
+]

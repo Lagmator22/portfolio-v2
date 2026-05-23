@@ -1,0 +1,63 @@
+name: Site hooks — sitemap + OG image
+
+# Whenever published data changes, regenerate the sitemap and the social-card
+# image, then commit them back to main. The Pages deploy workflow picks up the
+# follow-up commit and ships it.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/posts.json'
+      - 'data/projects.json'
+      - 'data/study.json'
+      - '_github/scripts/build-sitemap.mjs'
+      - '_github/scripts/build-og.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    # Skip when the bot's own commit triggered the push (avoid feedback loop).
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Use a PAT or default GITHUB_TOKEN — default is fine since we set
+          # `[skip ci]` on our commit to prevent loops.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install minimal deps (no package.json needed)
+        run: npm install --no-save @resvg/resvg-js@2
+
+      - name: Build sitemap.xml
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://example.github.io/Portfolio' }}
+        run: node .github/scripts/build-sitemap.mjs
+
+      - name: Build og.png
+        env:
+          SITE_TITLE: ${{ vars.SITE_TITLE || 'Gurman S.' }}
+          SITE_TAGLINE: ${{ vars.SITE_TAGLINE || 'AI inference. C++ systems. Pixel monsters.' }}
+        run: node .github/scripts/build-og.mjs
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml og.png assets/og.png 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No site-hook changes to commit."
+          else
+            git commit -m "chore(site): regenerate sitemap + og [skip ci]"
+            git push
+          fi

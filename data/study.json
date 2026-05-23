@@ -1,0 +1,32 @@
+[
+  {
+    "id": "s-link-1",
+    "kind": "drive",
+    "title": "Link 1",
+    "course": "",
+    "tags": [],
+    "url": "https://drive.google.com/drive/folders/REPLACE_WITH_YOUR_DRIVE_LINK",
+    "note": "Drive link — replace url with your shared folder.",
+    "added": "2026-05-17"
+  },
+  {
+    "id": "s-link-2",
+    "kind": "drive",
+    "title": "Link 2",
+    "course": "",
+    "tags": [],
+    "url": "https://drive.google.com/drive/folders/REPLACE_WITH_YOUR_DRIVE_LINK",
+    "note": "Drive link — replace url with your shared folder.",
+    "added": "2026-05-17"
+  },
+  {
+    "id": "s-link-3",
+    "kind": "video",
+    "title": "Link 3",
+    "course": "",
+    "tags": [],
+    "url": "https://drive.google.com/file/d/REPLACE_WITH_YOUR_VIDEO_LINK/view",
+    "note": "Video — replace url with your Drive/YouTube link.",
+    "added": "2026-05-17"
+  }
+]
