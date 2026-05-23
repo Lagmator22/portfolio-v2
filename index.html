@@ -2844,9 +2844,14 @@ const CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX_PARTS.join('');
 function Contact() {
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
   const [draft, setDraft] = useState({ name: '', email: '', topic: 'work', msg: '' });
+  const [honeypot, setHoneypot] = useState('');
+  const MAILTO_HREF = 'mailto:' + INBOX_PARTS.join('') + '?subject=' + encodeURIComponent('portfolio contact');
   useEffect(() => {window.__observeReveal?.();}, []);
   const submit = async (e) => {
     e.preventDefault();
+    if (status === 'sending') return;
+    // Honeypot: real humans never fill this. If filled, pretend success silently.
+    if (honeypot) { setStatus('sent'); setDraft({ name: '', email: '', topic: 'work', msg: '' }); setTimeout(() => setStatus('idle'), 6000); return; }
     setStatus('sending');
     try {
       const res = await fetch(CONTACT_ENDPOINT, {
@@ -2859,11 +2864,14 @@ function Contact() {
           message: draft.msg,
           _subject: `[portfolio · ${draft.topic}] ${draft.name}`,
           _template: 'table',
-          _captcha: 'false'
+          _captcha: 'false',
+          _replyto: draft.email
         })
       });
-      const ok = res.ok;
-      if (!ok) throw new Error('bad status ' + res.status);
+      let data = {};
+      try { data = await res.json(); } catch {}
+      const ok = res.ok && (data.success === 'true' || data.success === true || res.status < 400);
+      if (!ok) throw new Error(data.message || ('bad status ' + res.status));
       setStatus('sent');
       setDraft({ name: '', email: '', topic: 'work', msg: '' });
       setTimeout(() => setStatus('idle'), 6000);
@@ -2896,10 +2904,16 @@ function Contact() {
               </div>
             </div>
             <div className="field"><label>message</label><textarea value={draft.msg} onChange={(e) => setDraft({ ...draft, msg: e.target.value })} placeholder="hey gurman, …" required /></div>
+            {/* Honeypot — invisible to humans, irresistible to naive bots. */}
+            <label aria-hidden="true" tabIndex={-1} style={{ position:'absolute', left:'-9999px', top:0, opacity:0, pointerEvents:'none' }}>
+              keep this field empty
+              <input type="text" name="_honey" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+            </label>
             <div style={{ display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
               <button className="btn btn--primary" type="submit" disabled={status==='sending'}>
                 {status==='sending' ? 'sending…' : 'send'} <span className="arrow">→</span>
               </button>
+              <a className="btn btn--ghost" href={MAILTO_HREF}>or email directly</a>
               {status==='sent'  && <span style={{ color: 'var(--accent)', fontSize: 13 }}>· received. reply incoming.</span>}
               {status==='error' && <span style={{ color: '#ff7676', fontSize: 13 }}>· send failed — try again, or DM on linkedin/discord.</span>}
             </div>
