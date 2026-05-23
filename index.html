@@ -2816,6 +2816,7 @@ const CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX_PARTS.join('');
 
 function Contact() {
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [errorMsg, setErrorMsg] = useState('');
   const [draft, setDraft] = useState({ name: '', email: '', topic: 'work', msg: '' });
   const [honeypot, setHoneypot] = useState('');
   const MAILTO_HREF = 'mailto:' + INBOX_PARTS.join('') + '?subject=' + encodeURIComponent('portfolio contact');
@@ -2843,15 +2844,22 @@ function Contact() {
       });
       let data = {};
       try { data = await res.json(); } catch {}
-      const ok = res.ok && (data.success === 'true' || data.success === true || res.status < 400);
+      // FormSubmit returns 200 OK with {"success":"false", ...} when it rejects
+      // (wrong Origin, missing fields, etc.). Trust the JSON's success field if
+      // present; fall back to HTTP status only when the body has no success key.
+      const apiOk   = data.success === 'true' || data.success === true;
+      const apiFail = data.success === 'false' || data.success === false;
+      const ok = res.ok && (apiOk || (!apiFail && data.success === undefined && res.status < 400));
       if (!ok) throw new Error(data.message || ('bad status ' + res.status));
       setStatus('sent');
+      setErrorMsg('');
       setDraft({ name: '', email: '', topic: 'work', msg: '' });
-      setTimeout(() => setStatus('idle'), 6000);
+      setTimeout(() => setStatus(s => s === 'sent' ? 'idle' : s), 10000);
     } catch (err) {
       console.error('contact form send failed', err);
+      setErrorMsg(err?.message || 'could not deliver right now.');
       setStatus('error');
-      setTimeout(() => setStatus('idle'), 6000);
+      setTimeout(() => setStatus(s => s === 'error' ? 'idle' : s), 10000);
     }
   };
 
@@ -2887,9 +2895,23 @@ function Contact() {
                 {status==='sending' ? 'sending…' : 'send'} <span className="arrow">→</span>
               </button>
               <a className="btn btn--ghost" href={MAILTO_HREF}>or email directly</a>
-              {status==='sent'  && <span style={{ color: 'var(--accent)', fontSize: 13 }}>· received. reply incoming.</span>}
-              {status==='error' && <span style={{ color: '#ff7676', fontSize: 13 }}>· send failed — try again, or DM on linkedin/discord.</span>}
             </div>
+            {(status==='sent' || status==='error') && (
+              <div role="status" aria-live="polite" style={{
+                padding:'12px 16px', borderRadius:10, fontSize:14, lineHeight:1.5,
+                display:'flex', alignItems:'center', gap:10,
+                background: status==='sent' ? 'color-mix(in oklch, var(--accent) 14%, var(--bg-sunken))' : 'color-mix(in oklch, oklch(0.72 0.18 25) 14%, var(--bg-sunken))',
+                border: '1px solid ' + (status==='sent' ? 'var(--accent)' : 'oklch(0.72 0.18 25)'),
+                color: status==='sent' ? 'var(--accent)' : 'oklch(0.72 0.18 25)'
+              }}>
+                <span style={{ fontSize:18, lineHeight:1 }}>{status==='sent' ? '✓' : '✕'}</span>
+                <span>
+                  {status==='sent'
+                    ? <><b>Received.</b> Reply incoming — usually same day. Check spam if you don't see one within a week.</>
+                    : <><b>Send failed.</b> {errorMsg ? errorMsg + ' ' : ''}Try again, use the "email directly" button, or DM on linkedin/discord.</>}
+                </span>
+              </div>
+            )}
             <p style={{ color: 'var(--ink-4)', fontSize: 11, margin: 0 }}>routed via formsubmit · zero tracking · I read every message myself.</p>
           </form>
           <aside className="contact-side reveal">
