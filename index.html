@@ -2898,18 +2898,14 @@ function Contact() {
             </div>
             {(status==='sent' || status==='error') && (
               <div role="status" aria-live="polite" style={{
-                padding:'12px 16px', borderRadius:10, fontSize:14, lineHeight:1.5,
+                padding:'12px 16px', borderRadius:10, fontSize:14, fontWeight:600, lineHeight:1.5,
                 display:'flex', alignItems:'center', gap:10,
-                background: status==='sent' ? 'color-mix(in oklch, var(--accent) 14%, var(--bg-sunken))' : 'color-mix(in oklch, oklch(0.72 0.18 25) 14%, var(--bg-sunken))',
-                border: '1px solid ' + (status==='sent' ? 'var(--accent)' : 'oklch(0.72 0.18 25)'),
-                color: status==='sent' ? 'var(--accent)' : 'oklch(0.72 0.18 25)'
+                background: status==='sent' ? 'color-mix(in oklch, oklch(0.72 0.18 150) 14%, var(--bg-sunken))' : 'color-mix(in oklch, oklch(0.72 0.18 25) 14%, var(--bg-sunken))',
+                border: '1px solid ' + (status==='sent' ? 'oklch(0.72 0.18 150)' : 'oklch(0.72 0.18 25)'),
+                color: status==='sent' ? 'oklch(0.72 0.18 150)' : 'oklch(0.72 0.18 25)'
               }}>
                 <span style={{ fontSize:18, lineHeight:1 }}>{status==='sent' ? '✓' : '✕'}</span>
-                <span>
-                  {status==='sent'
-                    ? <><b>Received.</b> Reply incoming — usually same day. Check spam if you don't see one within a week.</>
-                    : <><b>Send failed.</b> {errorMsg ? errorMsg + ' ' : ''}Try again, use the "email directly" button, or DM on linkedin/discord.</>}
-                </span>
+                <span>{status==='sent' ? 'Success' : 'Try again'}</span>
               </div>
             )}
             <p style={{ color: 'var(--ink-4)', fontSize: 11, margin: 0 }}>routed via formsubmit · zero tracking · I read every message myself.</p>
