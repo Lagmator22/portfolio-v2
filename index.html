@@ -1185,16 +1185,10 @@ window.__PROJECTS = [
     summary:"A modular C++ speech-to-text tool built on whisper.cpp. Clean API boundaries so it slots in as a tool for agentic pipelines, a library for editors, or a standalone CLI — no cloud call, no Python, no surprises.",
     body:`A native transcription studio wrapping whisper.cpp with a workflow for batch jobs, edit-as-you-listen review, and speaker labeling — all running on the device.\n\n— THE IDEA —\nEvery transcription tool I'd tried was either a wrapper around a cloud API or a GUI hiding whisper.cpp behind Electron. Lisper is the opposite: a small, modular C++ layer on top of whisper.cpp with a clean API that can be registered as an agentic tool or called as a library.\n\n— SHAPE —\nThe transcription pipeline, the model loader, and the I/O front-ends are separate compilation units, so embedders can pull exactly the pieces they need. The same codebase ships a REPL-ish CLI, a library surface, and (eventually) an editor plug-in.\n\n— STATS —\nruntime: whisper.cpp\nlanguage: C++\ndeps: CMake only\n\nBuilt out of frustration with web-based transcription tools that ship audio off your machine. Lisper keeps everything local: drag in audio, get a clean transcript with timestamps, edit, export.`},
 
-  // Reserved slots — placeholders for projects landing on GitHub soon.
-  // To publish: replace this entry's title/subtitle/stack/summary/body/repo with the real thing.
-  {id:"reserved-3",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"moth",accent:"purple",
-    summary:"Reserved. The next project lives here — coming to github.com/Lagmator22 soon."},
-  {id:"reserved-4",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"warden",accent:"red",
-    summary:"Reserved. Will be filled once it ships."},
-  {id:"reserved-5",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"ink",accent:"pink",
-    summary:"Reserved. Will be filled once it ships."},
-  {id:"reserved-6",title:"reserved",subtitle:"a slot held for the next project",year:"soon",stack:["TBA"],monsterId:"pip",accent:"cyan",
-    summary:"Reserved. Will be filled once it ships."}
+  // To add a new project: push another entry with the same shape as ovasearch / lisper above.
+  // Fields: id, title, subtitle, year, stack[], flagship?, monsterId, accent, repo?, summary, body?
+  // monsterId picks which 16×16 pixel familiar gets rendered on the card — see window.__MONSTERS.
+  // accent is a color key — see :root --accent-h overrides for the palette.
 ];
 
 /* ======================================================================
@@ -2261,12 +2255,16 @@ const STUDY_KINDS = {
   github: { label: 'github', glyph: '◉',  hue: 280 },
   slides: { label: 'slides', glyph: '▤',  hue: 350 }
 };
-const STUDY_DEFAULTS = [
-  // Edit the `url` values below to point at your real Drive folders / videos.
-  { id: 's-link-1', kind: 'drive', title: 'Link 1', course: '', tags: [], url: 'https://drive.google.com/drive/folders/REPLACE_WITH_YOUR_DRIVE_LINK', note: 'Drive link — replace url with your shared folder.',  added: '2026-05-17' },
-  { id: 's-link-2', kind: 'drive', title: 'Link 2', course: '', tags: [], url: 'https://drive.google.com/drive/folders/REPLACE_WITH_YOUR_DRIVE_LINK', note: 'Drive link — replace url with your shared folder.',  added: '2026-05-17' },
-  { id: 's-link-3', kind: 'video', title: 'Link 3', course: '', tags: [], url: 'https://drive.google.com/file/d/REPLACE_WITH_YOUR_VIDEO_LINK/view', note: 'Video — replace url with your Drive/YouTube link.', added: '2026-05-17' }
-];
+// STUDY_DEFAULTS = the seed list shown when data/study.json is empty.
+// Kept empty in production so the page doesn't ship demo content.
+// Add items via the Owner Console "+ link" button — they get persisted to
+// data/study.json on publish. Item shape:
+//   { id, kind, title, course?, tags[], url, note?, added: 'YYYY-MM-DD' }
+// `kind` is a key of STUDY_KINDS above. Example entry for reference:
+//   { id: 's-1', kind: 'drive', title: 'CS-310 OS notes', course: 'cs-310',
+//     tags: ['os','notes'], url: 'https://drive.google.com/...', note: '',
+//     added: '2026-05-26' }
+const STUDY_DEFAULTS = [];
 window.__STUDY_DEFAULTS = STUDY_DEFAULTS; // exposed for publish/data-store.js fallback path
 function StudyLab({ owner }) {
   const remoteStudy = useDataStore('study');
@@ -2331,7 +2329,7 @@ function StudyLab({ owner }) {
       <div className="shell">
         <div className="section__hd reveal">
           <div>
-            <div className="section__idx">STUDY LAB · {items.length} resources</div>
+            <div className="section__idx">STUDY LAB{items.length > 0 ? ' · ' + items.length + ' resources' : ''}</div>
             <h2 className="section__title">A shared desk for the cohort.</h2>
           </div>
           <p className="section__copy">Lectures, scans, problem-sets, and Drive folders. Filter by course or kind. Click anything to open. {owner ? '' : 'Sign in as owner to add, edit, or remove.'}</p>
@@ -2395,22 +2393,23 @@ function StudyLab({ owner }) {
           )}
         </div>
 
-        <div className="study__legend reveal">
-          <div className="kicker">how this works · adding resources</div>
-          <ul>
-            <li><b>video</b> — youtube / drive / vimeo link, or upload a small file. opens in a new tab.</li>
-            <li><b>drive</b> — google drive folder/file. set sharing to "anyone with the link · viewer".</li>
-            <li><b>code</b> — repo link, gist, raw file, or playground (replit, stackblitz, godbolt).</li>
-            <li><b>blog</b> — link to an article — including posts on this site (use <code>#/post/&lt;id&gt;</code>).</li>
-            <li><b>github</b> — full repo link. add a course tag to keep things grouped.</li>
-            <li><b>slides</b> — google slides, slideshare, figma deck, anywhere.</li>
-            <li><b>link / notes</b> — for anything else (notion, hackmd, gist, syllabus).</li>
-          </ul>
-          <p style={{ marginTop: 14, fontSize: 12, color: 'var(--ink-4)', fontFamily: 'var(--font-mono)', lineHeight: 1.6 }}>
-            future agents: this list is generated from <code>STUDY_KINDS</code> in the babel script. add a new
-            entry there + a CSS hue and a new tile color shows up automatically — no other code changes needed.
-          </p>
-        </div>
+        {/*
+          DEV NOTE (was rendered on the page — pulled out so visitors don't see
+          a "how to use this site" panel that screams demo template):
+
+          STUDY_KINDS reference — pick the right one when adding a resource:
+            video   — youtube / drive / vimeo link, or a small uploaded file. Opens in a new tab.
+            drive   — google drive folder or file. Set sharing to "anyone with the link · viewer".
+            code    — repo link, gist, raw file, or playground (replit, stackblitz, godbolt).
+            blog    — link to an article (including posts on this site: #/post/<id>).
+            github  — full repo link. Add a course tag to group related repos.
+            slides  — google slides, slideshare, figma deck, anywhere.
+            link/notes — anything else (notion, hackmd, gist, syllabus).
+
+          Adding a new kind: append `{ key: { label, glyph, hue } }` to STUDY_KINDS
+          above, add a matching `--k-hue-<key>` block in CSS if the hue isn't
+          already covered, and the filter pill + tile color show up automatically.
+        */}
       </div>
 
       {editing && (
@@ -2967,10 +2966,7 @@ function Contact() {
             <a className="contact-link" href="https://github.com/Lagmator22" target="_blank" rel="noopener noreferrer">
               <span>github · Lagmator22</span><span>→</span>
             </a>
-            <div className="contact-slot" aria-hidden="true">
-              <span>future channel · TBD</span>
-              <small>signal? matrix? carrier pigeon?</small>
-            </div>
+            {/* To add another contact channel, drop a `<a className="contact-link" ...>` above. */}
             <div className="kicker" style={{ marginTop: 6 }}>turnaround</div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.7 }}>
               <div>· same day for work / collab</div>
