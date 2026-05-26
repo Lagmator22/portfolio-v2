@@ -2281,7 +2281,9 @@ function CursorLab({ onPick }) {
  * STUDY_DEFAULTS below. Each item shape:
  *   { id, kind, title, course, tags:[], url, note, added }
  * ============================================================ */
-const STUDY_KEY = 'gurman.study.v2';
+// Bumped to v3 to invalidate any browser-cached copies of the old demo
+// "Link 1/2/3 — replace url..." defaults from before the seed was emptied.
+const STUDY_KEY = 'gurman.study.v3';
 // hue is the OKLCH hue (0–360) used for the left-edge accent bar.
 // To add a new kind: drop a line here. To remove one: delete its line.
 const STUDY_KINDS = {
@@ -3269,10 +3271,12 @@ function App() {
   const [owner, setOwner] = useState(() => sessionStorage.getItem('gurman.owner.session') === 'on');
   const [showLogin, setShowLogin] = useState(false);
   const [editingPost, setEditingPost] = useState(null); // post object or {} for new
-  const [customPosts, setCustomPosts] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.posts.v2')) || [];} catch {return [];}});
-  const [customProjs, setCustomProjs] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.projs.v2')) || {};} catch {return {};}});
-  useEffect(() => {localStorage.setItem('gurman.custom.posts.v2', JSON.stringify(customPosts));}, [customPosts]);
-  useEffect(() => {localStorage.setItem('gurman.custom.projs.v2', JSON.stringify(customProjs));}, [customProjs]);
+  // Keys bumped to v3 to invalidate browser caches that may hold the old
+  // 4 "reserved-N" placeholder project patches / placeholder post drafts.
+  const [customPosts, setCustomPosts] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.posts.v3')) || [];} catch {return [];}});
+  const [customProjs, setCustomProjs] = useState(() => {try {return JSON.parse(localStorage.getItem('gurman.custom.projs.v3')) || {};} catch {return {};}});
+  useEffect(() => {localStorage.setItem('gurman.custom.posts.v3', JSON.stringify(customPosts));}, [customPosts]);
+  useEffect(() => {localStorage.setItem('gurman.custom.projs.v3', JSON.stringify(customProjs));}, [customProjs]);
 
   // Live data, hydrated from data/*.json with inline fallback. See publish/data-store.js.
   const POSTS = useDataStore('posts');
