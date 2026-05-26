@@ -2311,19 +2311,26 @@ const STUDY_DEFAULTS = [
 window.__STUDY_DEFAULTS = STUDY_DEFAULTS; // exposed for publish/data-store.js fallback path
 function StudyLab({ owner }) {
   const remoteStudy = useDataStore('study');
+  // Loader rule: localStorage represents the owner's local drafts. Use it
+  // only when it's a non-empty array. An empty array means "no drafts" —
+  // fall back to remote (data/study.json) or the inline STUDY_DEFAULTS.
+  // This prevents an empty cache (left over from a cache-key bump) from
+  // permanently overriding fresh remote/inline content.
   const [items, setItems] = useState(() => {
-    try { const r = JSON.parse(localStorage.getItem(STUDY_KEY)); if (r && Array.isArray(r)) return r; } catch {}
+    try {
+      const r = JSON.parse(localStorage.getItem(STUDY_KEY));
+      if (Array.isArray(r) && r.length > 0) return r;
+    } catch {}
     return remoteStudy && remoteStudy.length ? remoteStudy : STUDY_DEFAULTS;
   });
   // When the published study list updates from a publish, mirror it in if the
-  // user hasn't drafted local edits yet (i.e. localStorage matches the old default).
+  // local cache is missing or empty (no local drafts to clobber).
   useEffect(() => {
     if (!remoteStudy || !remoteStudy.length) return;
     try {
-      const local = localStorage.getItem(STUDY_KEY);
-      // Only auto-adopt when there's no local draft, or local matches defaults.
-      if (!local) setItems(remoteStudy);
-    } catch {}
+      const local = JSON.parse(localStorage.getItem(STUDY_KEY) || 'null');
+      if (!Array.isArray(local) || local.length === 0) setItems(remoteStudy);
+    } catch { setItems(remoteStudy); }
   }, [remoteStudy]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
