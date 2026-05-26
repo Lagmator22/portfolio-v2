@@ -466,6 +466,266 @@
     );
   }
 
+  /* ---------- dev notes panel ----------
+     Aggregates the inline code comments and the private-notes/ docs into a
+     tabbed reference that only renders inside the Owner Console (i.e. only
+     after the SHA-256 unlock). Recruiters never see it.
+  ----------------------------------------- */
+  function DevNotesPanel() {
+    const [open, setOpen] = useState(false);
+    const [tab, setTab] = useState('arch');
+
+    const TABS = [
+      { id: 'arch',     label: 'Architecture' },
+      { id: 'owner',    label: 'Owner / Password' },
+      { id: 'posts',    label: 'Posts' },
+      { id: 'projects', label: 'Projects' },
+      { id: 'study',    label: 'Study Lab' },
+      { id: 'monsters', label: 'Monsters' },
+      { id: 'contact',  label: 'Contact form' },
+      { id: 'storage',  label: 'Media storage' },
+      { id: 'csp',      label: 'CSP / security' },
+    ];
+
+    const codeStyle = { display:'block', whiteSpace:'pre-wrap', background:'var(--bg-sunken)', padding:'12px 14px', borderRadius:8, fontSize:12, lineHeight:1.55, fontFamily:'var(--font-mono)', color:'var(--ink-2)', overflowX:'auto' };
+    const H = ({ children }) => <h4 style={{ fontFamily:'var(--font-display)', fontSize:16, fontWeight:600, letterSpacing:'-0.01em', margin:'18px 0 8px', color:'var(--ink)' }}>{children}</h4>;
+    const P = ({ children }) => <p style={{ margin:'0 0 10px', color:'var(--ink-2)' }}>{children}</p>;
+
+    const content = {
+      arch: (<>
+        <P>Single-file vanilla HTML + React (in-browser Babel). No build step. The git repo on disk is at <code>portfolioV2ori/project/</code> (origin = <code>Lagmator22/Portfolio</code>). The bundle root <code>portfolioV2ori/</code> is NOT a git repo and contains <code>private-notes/</code>, a git-ignored folder with full versions of every doc that used to live in the repo.</P>
+        <H>File map</H>
+        <pre style={codeStyle}>{`index.html              Whole site — head, data arrays, cursor FX,
+                        React app (Home / Projects / Blog / Study /
+                        About / Contact / Console).
+data/
+  posts.json            Published posts (overrides inline __POSTS).
+  projects.json         Published projects (overrides inline).
+  study.json            Published study items (overrides inline).
+publish/
+  auth-store.js         PAT persistence + optional AES-GCM lock.
+  github-api.js         REST client.
+  data-store.js         JSON-first loader, inline fallback.
+  publish-queue.js      Offline retry queue.
+  storage-adapter.js    Pluggable media uploaders.
+  publisher.js          High-level publish ops.
+  owner-console.jsx     This screen.
+  publish-button.jsx    Reusable publish control.
+.github/workflows/
+  pages.yml             GitHub Pages deploy on push to main.
+  site-hooks.yml        Regenerates sitemap.xml + og.png on data
+                        changes (commits with [skip ci]).
+private-notes/          Git-ignored. Full owner setup guide,
+                        storage adapters, oauth-worker template,
+                        architecture overview.`}</pre>
+        <H>How runtime data flows</H>
+        <P>Boot: <code>DataStore.hydrate()</code> fetches <code>data/*.json</code> in parallel; if present + non-empty, it overwrites <code>window.__POSTS</code> / <code>__PROJECTS</code> / <code>__STUDY_DEFAULTS</code>. React reads from window. So editing the inline arrays in <code>index.html</code> changes the defaults; the JSON files are the canonical "published" state.</P>
+      </>),
+
+      owner: (<>
+        <P>Unlocking the owner UI is gated by a SHA-256 hash of the password — the literal password never lives in the source. Unlocking only reveals the editor UI in <em>your</em> browser; it does NOT grant write access to GitHub. Real publishing also requires a PAT in this Console.</P>
+        <H>Rotate the password</H>
+        <pre style={codeStyle}>{`# In a terminal:
+echo -n "your-new-strong-password" | shasum -a 256
+
+# Copy the 64-char hex it prints. In index.html (top of <head>):
+const TWEAK_DEFAULTS = {
+  ...
+  "ownerHash": "<paste hex here>"
+};
+
+# Commit + push. Old password stops working on next reload.
+# Never commit the plaintext password anywhere.`}</pre>
+        <H>If you forget the password</H>
+        <P>No recovery flow — there's no server. Run the recipe with a new password and paste the new hash over the old one. Push. Done.</P>
+        <H>Owner-only UI surfaces</H>
+        <P>Editor buttons on posts / projects / study tiles. "console" nav link. Owner badge in bottom-left. Locally drafted edits persist in <code>localStorage</code> until you click <strong>publish</strong>.</P>
+      </>),
+
+      posts: (<>
+        <P>Posts live in <code>data/posts.json</code> (canonical) and <code>window.__POSTS</code> (inline defaults). Sign in → <code>/dispatch</code> → "+ new post" to use the editor. Or push directly into <code>window.__POSTS</code>.</P>
+        <H>Item shape</H>
+        <pre style={codeStyle}>{`{
+  id:        "edge-inference-2026",         // slug-style, unique
+  category:  "ai" | "quant" | "research" | "gems",
+  title:     "The quiet revolution in edge inference",
+  dek:       "Subtitle line.",
+  date:      "2026-04-12",                  // YYYY-MM-DD
+  readMin:   "9 min",
+  featured:  true,                          // optional, big card on home
+  tags:      ["inference", "edge", "arm"],
+  body:      \`...markdown...\`              // see subset below
+}`}</pre>
+        <H>Markdown subset</H>
+        <pre style={codeStyle}>{`LEAD: italic intro line at the top.
+## section heading
+### subheading
+> pull quote
+- bullet one
+- bullet two
+\`\`\`code block\`\`\`
+**bold**  *italic*  \`inline code\`  [link text](https://example)
+Anything else renders as a paragraph. HTML is escaped — even as owner.`}</pre>
+      </>),
+
+      projects: (<>
+        <P>Projects live in <code>data/projects.json</code> and <code>window.__PROJECTS</code>. Sign in → open a project page → "edit project". Or push another entry into the array.</P>
+        <H>Item shape</H>
+        <pre style={codeStyle}>{`{
+  id:        "ovasearch",
+  title:     "OvaSearch",
+  subtitle:  "Native C++ multimodal RAG engine",
+  year:      "2026",
+  stack:     ["C++", "OpenVINO", "USearch", "HNSW"],
+  flagship:  true,           // makes it bigger on the projects grid
+  monsterId: "crystalith",   // a window.__MONSTERS id
+  accent:    "indigo",       // one of the accent keys (see below)
+  repo:      "https://github.com/Lagmator22/OvaSearch",
+  summary:   "One-paragraph version shown on the card.",
+  body:      \`Long form. \\n\\n— SECTION —\\n...\`
+}`}</pre>
+        <H>Available monster IDs</H>
+        <P><code>crystalith</code> · <code>volt</code> · <code>moth</code> · <code>warden</code> · <code>ink</code> · <code>pip</code> · plus four more (see window.__MONSTERS list in index.html).</P>
+        <H>Accent colors</H>
+        <P><code>indigo</code> · <code>purple</code> · <code>blue</code> · <code>cyan</code> · <code>green</code> · <code>yellow</code> · <code>gold</code> · <code>orange</code> · <code>red</code> · <code>pink</code></P>
+      </>),
+
+      study: (<>
+        <P>Study lab items live in <code>data/study.json</code> and <code>STUDY_DEFAULTS</code> (inline). The site loader prefers a non-empty localStorage cache → remote JSON → inline defaults. An empty cache falls through, so old caches can't get stuck.</P>
+        <H>Item shape</H>
+        <pre style={codeStyle}>{`{
+  id:     "s-1",
+  kind:   "drive",            // see kinds below
+  title:  "CS-310 OS notes",
+  course: "cs-310",           // optional
+  tags:   ["os", "notes"],
+  url:    "https://drive.google.com/...",
+  note:   "",                 // one-line description, optional
+  added:  "2026-05-26"        // YYYY-MM-DD
+}`}</pre>
+        <H>Kinds (STUDY_KINDS)</H>
+        <pre style={codeStyle}>{`video   YouTube / Drive / Vimeo link, or small uploaded file.
+drive   Google Drive folder/file. Share = "anyone with link · viewer".
+code    Repo, gist, raw file, or playground (replit, stackblitz, godbolt).
+blog    Article link, including posts on this site (#/post/<id>).
+github  Full repo link. Add a course tag to group.
+slides  Google Slides / Slideshare / Figma deck.
+notes   Notion / HackMD / etc.
+link    Generic catch-all.`}</pre>
+        <P>To add a new kind: append <code>{`{ key: { label, glyph, hue } }`}</code> to <code>STUDY_KINDS</code> in index.html. The filter pills and tile color update automatically.</P>
+      </>),
+
+      monsters: (<>
+        <P>10 pixel familiars defined in <code>window.__MONSTERS</code>. Each is a 16×16 grid of characters. The renderer (<code>MonsterRenderer</code>) reads the grid and draws cel-shaded pixels frame-by-frame on a canvas.</P>
+        <H>Grid character codes</H>
+        <pre style={codeStyle}>{`.   transparent (no draw)
+L   outline / line (palette.L)
+B   body fill   (palette.B)  + auto-cel-shading
+S   shade       (palette.S)  + scale stripe
+H   highlight   (palette.H)  + top spark
+E   eye         (palette.E)  + bright glint + blink
+A   accent      (palette.A)  + pulsing ember`}</pre>
+        <H>Monster shape</H>
+        <pre style={codeStyle}>{`{
+  id:        "crystalith",
+  name:      "Crystalith",
+  archetype: "Prism wyvern",
+  element:   "prism",
+  idle:      "hover" | "flutter" | "stomp" | "drift" | "blink" | "march",
+  speed:     170,    // frame interval (ms-ish)
+  glow:      0.42,   // 0..1 — radial halo intensity
+  palette:   { L, B, S, H, E, A },   // hex colors
+  pixels:    [ "16-char row", ... 16 rows ],
+  zones:     [ ...lZ([14,15]), ...tZ([12,13],3) ]   // animated regions
+}`}</pre>
+        <H>Zone helpers</H>
+        <P><code>lZ(rows)</code> = legs (walk cycle). <code>wZ(rows)</code> = wings. <code>tZ(rows,xMax)</code> = tail. <code>eZ(rows)</code> = eye blink. Each zone defines per-frame <code>dx/dy</code> offsets that the renderer applies to matching cells.</P>
+      </>),
+
+      contact: (<>
+        <P>The form posts to FormSubmit (no signup, no backend) which forwards to the inbox owner. Email never appears literally in DOM — it's reconstructed at runtime from <code>INBOX_PARTS</code>.</P>
+        <H>Change the receiving email</H>
+        <pre style={codeStyle}>{`// In index.html, inside the Contact section:
+const INBOX_PARTS = ['gsingh16', '_be24', '@', 'thapar', '.edu'];
+
+// Just split your real address into 3+ chunks of any size:
+const INBOX_PARTS = ['new', 'address', '@', 'gmail', '.com'];
+
+// First submission from a new email triggers a confirmation
+// link from FormSubmit. Click it ONCE to activate; messages
+// flow from then on.`}</pre>
+        <H>How validation works</H>
+        <P>Strict regex catches malformed addresses. Cloudflare DNS-over-HTTPS (<code>cloudflare-dns.com/dns-query</code>) checks the domain has MX records. No MX → block. Cloudflare itself fails → let through (don't punish users for our flaky DNS).</P>
+        <H>Rotate to an opaque hashed endpoint</H>
+        <P>After confirming once, FormSubmit emails an <code>/ajax/&lt;hash&gt;</code> alias. Swap that into <code>CONTACT_ENDPOINT</code> and your email address is no longer reverse-engineerable from the JS source.</P>
+      </>),
+
+      storage: (<>
+        <P>Study Lab file uploads route through the active storage adapter. Default is <code>none</code> — uploads become inline data URLs that vanish on reload. To actually persist files, switch the adapter in the Media storage card above.</P>
+        <pre style={codeStyle}>{`none          No upload. Paste URLs only.
+gh-release    Uploads as Release assets on a "media" Release in
+              this repo. Free, 2 GB / file, public URLs forever.
+              Works immediately — no extra setup.
+r2            Cloudflare R2. 10 GB free, zero egress fees.
+              Needs a signing worker (template in
+              private-notes/oauth-worker.md).
+b2            Backblaze B2. Same shape as R2. Stub for now.`}</pre>
+        <P>For PDFs, lecture notes, course files → <code>gh-release</code> is the right choice. For long-form video, host on YouTube or Drive and paste the link instead.</P>
+        <H>Adapter contract (for adding a new one)</H>
+        <pre style={codeStyle}>{`// publish/storage-adapter.js
+adapters.myService = {
+  label:       'My Service',
+  description: 'What this is, free tier, caveats.',
+  async upload(file, opts, ctx) {
+    // Use ctx.gh (GithubAPI client) and ctx.token if needed.
+    // Return { url, bytes, name }.
+  }
+}`}</pre>
+      </>),
+
+      csp: (<>
+        <P>Content Security Policy is delivered via a <code>&lt;meta http-equiv&gt;</code> tag at the top of <code>index.html</code>. It restricts what the page can connect to / load.</P>
+        <H>Current connect-src allowlist</H>
+        <pre style={codeStyle}>{`'self'                       Same origin (data/*.json fetches)
+https://hn.algolia.com       HN news feed (for the Dispatch tab)
+https://api.github.com       Owner Console + Publisher
+https://formsubmit.co        Contact form submissions
+https://cloudflare-dns.com   Email MX validation`}</pre>
+        <H>Adding a new external service</H>
+        <P>If you add an integration (analytics, comments, search index, etc.) you must add its origin to <code>connect-src</code> or the browser will silently block <code>fetch</code> calls. Symptom: <em>"Refused to connect because it violates the document's Content Security Policy"</em> in DevTools console.</P>
+        <H>Frame protection</H>
+        <P>The <code>frame-ancestors 'self'</code> directive prevents the site from being embedded in iframes on other domains. Browsers print a console warning that this directive is ignored in <code>&lt;meta&gt;</code> form (it works only in HTTP headers) — leave it anyway as defense-in-depth.</P>
+      </>),
+    };
+
+    return (
+      <Card
+        title="Dev notes"
+        kicker="REFERENCE · owner-only"
+        right={<button className="btn btn--sm" onClick={() => setOpen(o => !o)}>{open ? 'hide' : 'show'}</button>}
+      >
+        {!open ? (
+          <p style={{ margin: 0, color: 'var(--ink-3)', fontSize: 14, lineHeight: 1.6 }}>
+            All the architecture, schema, password rotation, FormSubmit, storage, and CSP notes that used to live in the public repo and rendered copy. Click <strong>show</strong> to reveal — visible only to you.
+          </p>
+        ) : (<>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+            {TABS.map(t => (
+              <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={tab === t.id}
+                className={'oc-pill' + (tab === t.id ? ' oc-pill--ok' : '')}
+                style={{ cursor: 'pointer', fontFamily: 'var(--font-mono)', letterSpacing: '.04em' }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ marginTop: 14, fontSize: 13, lineHeight: 1.65, color: 'var(--ink-2)' }}>
+            {content[tab]}
+          </div>
+        </>)}
+      </Card>
+    );
+  }
+
   /* ---------- main console ---------- */
 
   function OwnerConsole({ onExit }) {
@@ -525,6 +785,7 @@
             <DataSourcesPanel />
             <StoragePanel />
             <SecurityPanel summary={summary} refresh={refresh} />
+            <DevNotesPanel />
           </div>
 
         </div>
