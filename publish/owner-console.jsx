@@ -764,7 +764,10 @@ https://cloudflare-dns.com   Email MX validation`}</pre>
       <main className="section oc-page">
         <div className="shell">
 
-          <div className="oc-hero reveal">
+          {/* No `.reveal` here on purpose — the IntersectionObserver is unreliable
+              on hash-route nav, and we want "Plumbing." to be visible the moment
+              the Console mounts. Same for the rest of the page below. */}
+          <div className="oc-hero">
             <div>
               <div className="kicker">OWNER CONSOLE · publish to github</div>
               <h1 className="oc-hero__title">Plumbing.</h1>
