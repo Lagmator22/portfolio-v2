@@ -2297,15 +2297,17 @@ const STUDY_KINDS = {
   slides: { label: 'slides', glyph: '▤',  hue: 350 }
 };
 // STUDY_DEFAULTS = the seed list shown when data/study.json is empty.
-// Kept empty in production so the page doesn't ship demo content.
-// Add items via the Owner Console "+ link" button — they get persisted to
-// data/study.json on publish. Item shape:
+// Edit the title/url/note in place to point at real resources, or use the
+// Owner Console "+ link" button (persists to data/study.json on publish).
+// Item shape:
 //   { id, kind, title, course?, tags[], url, note?, added: 'YYYY-MM-DD' }
-// `kind` is a key of STUDY_KINDS above. Example entry for reference:
-//   { id: 's-1', kind: 'drive', title: 'CS-310 OS notes', course: 'cs-310',
-//     tags: ['os','notes'], url: 'https://drive.google.com/...', note: '',
-//     added: '2026-05-26' }
-const STUDY_DEFAULTS = [];
+// `kind` must be a key of STUDY_KINDS above (drive, video, link, notes,
+// code, blog, github, slides).
+const STUDY_DEFAULTS = [
+  { id: 's-link-1', kind: 'drive', title: 'Drive folder',  course: '', tags: [], url: '#', note: '', added: '2026-05-17' },
+  { id: 's-link-2', kind: 'drive', title: 'Drive folder',  course: '', tags: [], url: '#', note: '', added: '2026-05-17' },
+  { id: 's-link-3', kind: 'video', title: 'Video archive', course: '', tags: [], url: '#', note: '', added: '2026-05-17' }
+];
 window.__STUDY_DEFAULTS = STUDY_DEFAULTS; // exposed for publish/data-store.js fallback path
 function StudyLab({ owner }) {
   const remoteStudy = useDataStore('study');

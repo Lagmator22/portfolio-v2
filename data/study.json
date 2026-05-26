@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "s-link-1",
+    "kind": "drive",
+    "title": "Drive folder",
+    "course": "",
+    "tags": [],
+    "url": "#",
+    "note": "",
+    "added": "2026-05-17"
+  },
+  {
+    "id": "s-link-2",
+    "kind": "drive",
+    "title": "Drive folder",
+    "course": "",
+    "tags": [],
+    "url": "#",
+    "note": "",
+    "added": "2026-05-17"
+  },
+  {
+    "id": "s-link-3",
+    "kind": "video",
+    "title": "Video archive",
+    "course": "",
+    "tags": [],
+    "url": "#",
+    "note": "",
+    "added": "2026-05-17"
+  }
+]
