@@ -747,6 +747,10 @@ https://cloudflare-dns.com   Email MX validation`}</pre>
 
     useEffect(() => window.AuthStore.subscribe(refresh), [refresh]);
     useEffect(() => { refreshStatus(); }, [summary.hasToken, summary.cfg.owner, summary.cfg.repo, summary.cfg.branch, refreshStatus]);
+    // The hero uses `.reveal` for an entrance animation (opacity:0 until the
+    // IntersectionObserver flips it to .in). Without this call, the hero stays
+    // invisible on the /#/console route and the page renders a huge top gap.
+    useEffect(() => { window.__observeReveal?.(); }, []);
 
     const setupPct = (() => {
       let n = 0;
