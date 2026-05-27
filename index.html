@@ -1849,8 +1849,8 @@ window.__observeReveal = (root=document)=>root.querySelectorAll('.reveal:not(.in
 <!-- Cache-bust JSX bundles whenever the version below is bumped. Browsers
      cache JSX sources aggressively; without a query string, edits can sit
      invisible behind a stale cache for hours. Bump on every JSX change. -->
-<script type="text/babel" src="publish/publish-button.jsx?v=20260527-1"></script>
-<script type="text/babel" src="publish/owner-console.jsx?v=20260527-1"></script>
+<script type="text/babel" src="publish/publish-button.jsx?v=20260527-2"></script>
+<script type="text/babel" src="publish/owner-console.jsx?v=20260527-2"></script>
 
 <script type="text/babel">
 /* ============================================================
@@ -2011,7 +2011,7 @@ const HOME_SECTIONS = [
   { id: 'dispatch', label: 'dispatch' },
   { id: 'study',    label: 'study lab' }
 ];
-function Home({ posts, projects, onPost, onProject }) {
+function Home({ posts, projects, onPost, onProject, setTweak }) {
   const [activeMonster, setActiveMonster] = useState(MONSTERS[0]);
   useEffect(() => {window.__observeReveal?.();}, []);
   const featured = projects.filter((p) => p.flagship);
@@ -2128,10 +2128,14 @@ function Home({ posts, projects, onPost, onProject }) {
         </div>
       </section>
 
-      {/* CURSOR LAB */}
+      {/* CURSOR LAB — click locks the cursor in and persists it via the
+          tweaks store. Hover used to swap cursors live, but that triggered
+          accidental swaps mid-scroll (any pointer drift over a tile).
+          Click-only locks the choice; mouse-pass-over is now inert. */}
       <CursorLab tweaks={window.__tweaksGet?.() || {}} onPick={(v)=>{
         try{parent.postMessage({type:'__edit_mode_set_keys',edits:{cursor:v}},'*');}catch{}
         document.documentElement.setAttribute('data-cursor',v);
+        setTweak?.('cursor', v);
         const ev=new CustomEvent('cursorpicked',{detail:v});window.dispatchEvent(ev);
       }} />
 
@@ -2247,12 +2251,11 @@ function CursorLab({ onPick }) {
             <div className="section__idx">03 / CURSOR LAB</div>
             <h2 className="section__title">Pick a cursor. <em style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--accent)' }}>It changes shape</em>.</h2>
           </div>
-          <p className="section__copy">Every flare ships with its own silhouette and its own particle physics. Hover the cards — your cursor swaps in real time.</p>
+          <p className="section__copy">Every flare ships with its own silhouette and its own particle physics. Click a tile to lock yours in.</p>
         </div>
         <div className="cursor-lab reveal-stagger">
           {CURSORS.map((c, i) => (
             <button key={c.v} className="cursor-lab__tile reveal" aria-pressed={active === c.v} style={{ '--i': i }}
-              onMouseEnter={() => { document.documentElement.setAttribute('data-cursor', c.v); setActive(c.v); }}
               onClick={() => onPick(c.v)}>
               <span className="cursor-lab__glyph">{c.glyph}</span>
               <div className="cursor-lab__name">{c.name}<small>{active === c.v ? 'active' : c.v}</small></div>
@@ -3359,7 +3362,7 @@ function App() {
   };
 
   let page;
-  if (route.a === 'home') page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} />;else
+  if (route.a === 'home') page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} setTweak={setTweak} />;else
   if (route.a === 'projects' && route.b) {
     const p = allProjs.find((x) => x.id === route.b);
     page = p ? <ProjectPage project={p} owner={owner} onSave={(patch) => setCustomProjs((c) => ({ ...c, [p.id]: { ...(c[p.id] || {}), ...patch } }))} onBack={() => nav('projects')} /> :
@@ -3378,7 +3381,7 @@ function App() {
     if (owner) page = <OwnerConsole onExit={() => nav('home')} />;
     else { page = <main className="section"><div className="shell" style={{ padding: '80px 0' }}><div className="kicker">restricted</div><h2 className="section__title">Sign in as owner to access the console.</h2><div style={{ display: 'flex', gap: 10, marginTop: 18 }}><button className="btn btn--primary" onClick={() => setShowLogin(true)}>sign in</button><button className="btn" onClick={() => nav('home')}>back home</button></div></div></main>; }
   } else
-  page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} />;
+  page = <Home posts={allPosts} projects={allProjs} onPost={(p) => nav('post/' + p.id)} onProject={(p) => nav('projects/' + p.id)} setTweak={setTweak} />;
 
   return <>
     <Nav route={route} owner={owner} onTweaks={() => setTweakOpen((o) => !o)} onCmdk={() => setCmdkOpen(true)} />
