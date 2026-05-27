@@ -965,6 +965,11 @@ html[data-cursor]:not([data-cursor="off"]) *{cursor:none!important}
   transition:transform var(--dur-base) var(--ease-out),border-color var(--dur-base),box-shadow var(--dur-base);
 }
 .study__card:hover{transform:translateY(-3px);border-color:var(--k-edge);box-shadow:0 14px 36px color-mix(in oklch,var(--k-color) 30%,transparent)}
+/* Placeholder tiles (no real URL yet) — visually inert. No hover lift,
+   default cursor, slightly dimmed. Owner edit button still works. */
+.study__card--placeholder{opacity:.72}
+.study__card--placeholder:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.study__card--placeholder .study__cardlink{cursor:default}
 .study__card::before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
   background:linear-gradient(180deg,var(--k-color),transparent);
@@ -1844,8 +1849,8 @@ window.__observeReveal = (root=document)=>root.querySelectorAll('.reveal:not(.in
 <!-- Cache-bust JSX bundles whenever the version below is bumped. Browsers
      cache JSX sources aggressively; without a query string, edits can sit
      invisible behind a stale cache for hours. Bump on every JSX change. -->
-<script type="text/babel" src="publish/publish-button.jsx?v=20260526-4"></script>
-<script type="text/babel" src="publish/owner-console.jsx?v=20260526-4"></script>
+<script type="text/babel" src="publish/publish-button.jsx?v=20260527-1"></script>
+<script type="text/babel" src="publish/owner-console.jsx?v=20260527-1"></script>
 
 <script type="text/babel">
 /* ============================================================
@@ -2415,20 +2420,29 @@ function StudyLab({ owner }) {
         <div className="study__grid">
           {filtered.map((it) => {
             const k = STUDY_KINDS[it.kind] || { label: it.kind, glyph: '·', hue: 275 };
+            // A tile is "live" only when its URL is a real http(s) link.
+            // Placeholders that still hold "#" or empty render as non-clickable
+            // (no <a>, no target=_blank, no fake tab), with a "placeholder" note.
+            const live = typeof it.url === 'string' && /^https?:\/\//.test(it.url);
+            const inner = (<>
+              <div className="study__cardhd">
+                <span className="study__kind">{k.glyph} {k.label}</span>
+                {it.course && <span className="study__course">{it.course}</span>}
+              </div>
+              <h3 className="study__title">{it.title}</h3>
+              {it.note && <p className="study__note">{it.note}</p>}
+              <div className="study__foot">
+                <div className="study__tags">{(it.tags||[]).map(t => <span key={t} className="chip">#{t}</span>)}</div>
+                <span className="study__date">{it.added}</span>
+              </div>
+            </>);
             return (
-              <article key={it.id} className="study__card reveal" style={{ '--k-hue': k.hue }}>
-                <a className="study__cardlink" href={it.url || '#'} target="_blank" rel="noopener noreferrer" onClick={e => { if (!it.url) e.preventDefault(); }}>
-                  <div className="study__cardhd">
-                    <span className="study__kind">{k.glyph} {k.label}</span>
-                    {it.course && <span className="study__course">{it.course}</span>}
-                  </div>
-                  <h3 className="study__title">{it.title}</h3>
-                  {it.note && <p className="study__note">{it.note}</p>}
-                  <div className="study__foot">
-                    <div className="study__tags">{(it.tags||[]).map(t => <span key={t} className="chip">#{t}</span>)}</div>
-                    <span className="study__date">{it.added}</span>
-                  </div>
-                </a>
+              <article key={it.id} className={'study__card reveal' + (live ? '' : ' study__card--placeholder')} style={{ '--k-hue': k.hue }}>
+                {live ? (
+                  <a className="study__cardlink" href={it.url} target="_blank" rel="noopener noreferrer">{inner}</a>
+                ) : (
+                  <div className="study__cardlink" aria-disabled="true" title={owner ? 'No URL set yet — click edit to add one.' : 'Coming soon.'}>{inner}</div>
+                )}
                 {owner && (
                   <div className="study__ops">
                     <button className="btn btn--sm" onClick={() => setEditing(it)}>edit</button>
